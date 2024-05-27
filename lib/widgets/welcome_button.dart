@@ -12,7 +12,11 @@ class WelcomeButton extends StatelessWidget {
           topLeft: Radius.circular(50),
         )
       ),
-      child: const Text('Press Me')
+      child: const Text('Press Me',
+      style: TextStyle(
+        fontSize: 20,
+        fontWeight: FontWeight.bold
+      ),)
       );
   }
 }

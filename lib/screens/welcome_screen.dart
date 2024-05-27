@@ -32,8 +32,8 @@ class WelcomeScreen extends StatelessWidget {
             const Flexible(
               child: Row(
                 children: [
-                  WelcomeButton(),
-                  WelcomeButton()
+                  Expanded(child: WelcomeButton()),
+                  Expanded(child: WelcomeButton())
                 ],
               )
             )

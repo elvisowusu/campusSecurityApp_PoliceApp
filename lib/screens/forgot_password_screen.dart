@@ -1,3 +1,4 @@
+import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -10,6 +11,8 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Text('Forgot Password');
+    return const CustomScaffold(
+      customContainer: Text('Forgot Password'),
+    );
   }
 }

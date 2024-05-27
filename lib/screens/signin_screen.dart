@@ -13,6 +13,8 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
-    return const CustomScaffold();
+    return const CustomScaffold(
+      customContainer: Text('sign in'),
+    );
   }
 }

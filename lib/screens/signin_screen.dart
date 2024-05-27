@@ -1,3 +1,4 @@
+import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
 
 
@@ -12,6 +13,6 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
-    return const Text('Sign In');
+    return const CustomScaffold();
   }
 }

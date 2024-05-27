@@ -11,7 +11,9 @@ class WelcomeScreen extends StatelessWidget {
     return  CustomScaffold(
       customContainer:Column(
           children: [
-            Flexible(child: Container(
+            Flexible(
+              flex: 8,
+              child: Container(
               child: Center(child: RichText(
                 textAlign: TextAlign.center,
                 text:const TextSpan(
@@ -30,11 +32,15 @@ class WelcomeScreen extends StatelessWidget {
               )
             )),
             const Flexible(
-              child: Row(
-                children: [
-                  Expanded(child: WelcomeButton()),
-                  Expanded(child: WelcomeButton())
-                ],
+              flex: 1,
+              child: Align(
+                alignment: Alignment.bottomRight,
+                child: Row(
+                  children: [
+                    Expanded(child: WelcomeButton()),
+                    Expanded(child: WelcomeButton())
+                  ],
+                ),
               )
             )
           ],

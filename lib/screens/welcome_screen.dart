@@ -41,10 +41,14 @@ class WelcomeScreen extends StatelessWidget {
                     Expanded(child: WelcomeButton(
                       buttonName: 'Sign In',
                       onTap: SignInScreen(),
+                      textColor: Colors.white,
+                      buttonColor: Colors.transparent,
                     )),
                     Expanded(child: WelcomeButton(
                       buttonName: 'Sign Up',
                       onTap: SignUpScreen(),
+                      textColor: Colors.greenAccent,
+                      buttonColor: Colors.white,
                     ))
                   ],
                 ),

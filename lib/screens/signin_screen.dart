@@ -1,5 +1,6 @@
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 
 class SignInScreen extends StatefulWidget {
@@ -13,9 +14,27 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
-    return const CustomScaffold(
+    return CustomScaffold(
       image:'assets/images/security.avif',
-      customContainer: Text('sign in'),
+      customContainer: Column(
+        children: [
+          const Expanded(
+            child: SizedBox(
+              height: 18,) 
+          ),
+          Expanded(
+            child: Container(
+              decoration:const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.only(
+                  topLeft:  Radius.circular(40),
+                  topRight: Radius.circular(40),
+                ),
+              ),
+            )
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:cs_location_tracker_app/screens/signin_screen.dart';
 import 'package:cs_location_tracker_app/screens/signup_screen.dart';
+import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/welcome_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
@@ -32,13 +33,13 @@ class WelcomeScreen extends StatelessWidget {
               ),
               
               )),
-            const Flexible(
+            Flexible(
               flex: 1,
               child: Align(
                 alignment: Alignment.bottomRight,
                 child: Row(
                   children: [
-                    Expanded(child: WelcomeButton(
+                    const Expanded(child: WelcomeButton(
                       buttonName: 'Sign In',
                       onTap: SignInScreen(),
                       textColor: Colors.white,
@@ -46,8 +47,8 @@ class WelcomeScreen extends StatelessWidget {
                     )),
                     Expanded(child: WelcomeButton(
                       buttonName: 'Sign Up',
-                      onTap: SignUpScreen(),
-                      textColor: Colors.greenAccent,
+                      onTap:const SignUpScreen(),
+                      textColor: lightColorScheme.primary,
                       buttonColor: Colors.white,
                     ))
                   ],

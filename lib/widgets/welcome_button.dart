@@ -1,15 +1,15 @@
-import 'package:cs_location_tracker_app/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
 
 class WelcomeButton extends StatelessWidget {
-  const WelcomeButton({super.key, this.buttonName});
+  const WelcomeButton({super.key, this.buttonName, this.onTap});
   final String? buttonName;
+  final Widget? onTap;
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () =>{
-        Navigator.push(context, MaterialPageRoute(builder: (context) =>const SignUpScreen()) )
+        Navigator.push(context, MaterialPageRoute(builder: (context) =>onTap!) )
       },
       child: Container(
           decoration: const BoxDecoration(

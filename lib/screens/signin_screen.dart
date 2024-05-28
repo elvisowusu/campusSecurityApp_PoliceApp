@@ -14,6 +14,7 @@ class _SignInScreenState extends State<SignInScreen> {
   @override
   Widget build(BuildContext context) {
     return const CustomScaffold(
+      image:'assets/images/security.avif',
       customContainer: Text('sign in'),
     );
   }

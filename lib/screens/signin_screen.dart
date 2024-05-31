@@ -28,7 +28,7 @@ class _SignInScreenState extends State<SignInScreen> {
           Expanded(
               flex: 7,
               child: Container(
-                padding: const EdgeInsets.fromLTRB(25, 50, 25, 20),
+                padding: const EdgeInsets.fromLTRB(25, 30, 25, 20),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -51,7 +51,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             ),
                           ),
                           const SizedBox(
-                            height: 50,
+                            height: 30,
                           ),
                           TextFormField(
                             validator: (value) {

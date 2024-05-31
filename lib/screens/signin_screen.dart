@@ -2,7 +2,6 @@ import 'package:cs_location_tracker_app/screens/signup_screen.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:icons_plus/icons_plus.dart';
 
 class SignInScreen extends StatefulWidget {

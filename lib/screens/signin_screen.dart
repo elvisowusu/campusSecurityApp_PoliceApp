@@ -144,7 +144,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             width: double.infinity,
                             child: ElevatedButton(
                                 onPressed: () {
-                                  if (_signInformKey.currentState!.validate()) {
+                                  if (_signInformKey.currentState!.validate() && rememberPassword) {
                                     const SnackBar(
                                         content: Text('Processing Data'));
                                   }

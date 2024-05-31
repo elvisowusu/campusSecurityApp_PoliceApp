@@ -143,7 +143,6 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           SizedBox(
                             width: double.infinity,
-                            height: 50,
                             child: ElevatedButton(
                                 onPressed: () {
                                   if (_signInformKey.currentState!.validate() &&

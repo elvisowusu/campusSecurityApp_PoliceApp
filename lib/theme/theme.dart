@@ -38,9 +38,8 @@ ThemeData lightMode = ThemeData(
   colorScheme: lightColorScheme,
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-      foregroundColor:
-          MaterialStateProperty.all<Color>(lightColorScheme.onPrimary),
+      backgroundColor: MaterialStateProperty.all<Color>(lightColorScheme.primary),
+      foregroundColor: MaterialStateProperty.all<Color>(lightColorScheme.onPrimary),
       elevation: MaterialStateProperty.all<double>(5.0),
       padding: MaterialStateProperty.all<EdgeInsets>(
           const EdgeInsets.symmetric(horizontal: 20, vertical: 18)),
@@ -59,9 +58,8 @@ ThemeData darkMode = ThemeData(
   colorScheme: darkColorScheme,
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: MaterialStateProperty.all<Color>(Colors.white),
-      foregroundColor:
-          MaterialStateProperty.all<Color>(darkColorScheme.onPrimary),
+      backgroundColor: MaterialStateProperty.all<Color>(darkColorScheme.primary),
+      foregroundColor: MaterialStateProperty.all<Color>(darkColorScheme.onPrimary),
       elevation: MaterialStateProperty.all<double>(5.0),
       padding: MaterialStateProperty.all<EdgeInsets>(
           const EdgeInsets.symmetric(horizontal: 20, vertical: 18)),

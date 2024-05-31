@@ -1,4 +1,5 @@
 import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
+import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -14,10 +15,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: lightMode,
       home: const  WelcomeScreen(),
     );
   }

@@ -50,7 +50,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             ),
                           ),
                           const SizedBox(
-                            height: 20,
+                            height: 50,
                           ),
                           TextFormField(
                             validator: (value) {
@@ -142,16 +142,47 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           SizedBox(
                             width: double.infinity,
+                            height: 50,
                             child: ElevatedButton(
                                 onPressed: () {
-                                  if (_signInformKey.currentState!.validate() && rememberPassword) {
-                                    const SnackBar(
-                                        content: Text('Processing Data'));
+                                  if (_signInformKey.currentState!.validate() &&
+                                      rememberPassword) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text('Processing data')));
+                                  } else if (!rememberPassword) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(
+                                            content: Text(
+                                                'Please agree to the processing of personal data')));
                                   }
                                 },
-                                child: const Text('Sign Up')),
+                                child: const Text('Sign Up',)),
+                          ),
+                          const SizedBox(
+                            height: 35,
+                          ),
+                           Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Expanded(child: Divider(
+                                thickness: 0.7,
+                                color: Colors.grey.withOpacity(0.5),
+                              )),
+                               const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 0,
+                                  horizontal: 10,
+                                ),
+                                child: Text('Sign up with',style: TextStyle(color: Colors.black45),),
+                                ),
+                              Expanded(child: Divider(
+                                thickness: 0.7,
+                                color: Colors.grey.withOpacity(0.5),
+                              ))
+                            ],
                           )
-                        ],
+                          ],
                       )),
                 ),
               )),

@@ -27,6 +27,7 @@ class _SignInScreenState extends State<SignInScreen> {
           Expanded(
               flex: 7,
               child: Container(
+                padding: const EdgeInsets.fromLTRB(25, 50, 25, 20),
                 decoration: const BoxDecoration(
                   color: Colors.white,
                   borderRadius: BorderRadius.only(
@@ -34,106 +35,118 @@ class _SignInScreenState extends State<SignInScreen> {
                     topRight: Radius.circular(40),
                   ),
                 ),
-                child: Form(
-                    key: _signInformKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          'Welcome back',
-                          style: TextStyle(
-                            fontSize: 30,
-                            fontWeight: FontWeight.w900,
-                            color: lightColorScheme.primary,
+                child: SingleChildScrollView(
+                  child: Form(
+                      key: _signInformKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Welcome back',
+                            style: TextStyle(
+                              fontSize: 30,
+                              fontWeight: FontWeight.w900,
+                              color: lightColorScheme.primary,
+                            ),
                           ),
-                        ),
-                        const SizedBox(),
-                        TextFormField(
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter Email';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              label: const Text('Email'),
-                              hintText: 'Enter Email',
-                              hintStyle: const TextStyle(color: Colors.black26),
-                              border: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.black12,
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter Email';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                                label: const Text('Email'),
+                                hintText: 'Enter Email',
+                                hintStyle: const TextStyle(color: Colors.black26),
+                                border: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.black12,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
                                 ),
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.black12,
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.black12,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                )),
+                          ),
+                          const SizedBox(height: 20,),
+                          TextFormField(
+                            obscureText: true,
+                            obscuringCharacter: '*',
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter Password';
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                                label: const Text('Password'),
+                                hintText: 'Enter Password',
+                                hintStyle: const TextStyle(
+                                  color: Colors.black26,
                                 ),
-                                borderRadius: BorderRadius.circular(10),
-                              )),
-                        ),
-                        const SizedBox(),
-                        TextFormField(
-                          obscureText: true,
-                          obscuringCharacter: '*',
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter Password';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                              label: const Text('Password'),
-                              hintText: 'Enter Password',
-                              hintStyle: const TextStyle(
-                                color: Colors.black26,
-                              ),
-                              border: OutlineInputBorder(
-                                  borderSide:
-                                      const BorderSide(color: Colors.black12),
-                                  borderRadius: BorderRadius.circular(10)),
-                              enabledBorder: OutlineInputBorder(
-                                borderSide: const BorderSide(
-                                  color: Colors.black12,
+                                border: OutlineInputBorder(
+                                    borderSide:
+                                        const BorderSide(color: Colors.black12),
+                                    borderRadius: BorderRadius.circular(10)),
+                                enabledBorder: OutlineInputBorder(
+                                  borderSide: const BorderSide(
+                                    color: Colors.black12,
+                                  ),
+                                  borderRadius: BorderRadius.circular(10),
+                                )),
+                          ),
+                          const SizedBox(height: 20,),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                Checkbox(
+                                  value: rememberPassword,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      rememberPassword = value!;
+                                    });
+                                  },
+                                  activeColor: lightColorScheme.primary,
                                 ),
-                                borderRadius: BorderRadius.circular(10),
-                              )),
-                        ),
-                        const SizedBox(),
-                        Row(
-                          children: [
-                            Row(
-                              children: [
-                              Checkbox(
-                                value: rememberPassword,
-                                onChanged: (bool? value) {
-                                  setState(() {
-                                    rememberPassword = value!;
-                                  });
-                                },
-                                activeColor: lightColorScheme.primary,
-                              ),
-                              const Text(
-
-                                'Remember me',
-                                style: TextStyle(
-                                  color: Colors.black45
+                                const Text(
+                  
+                                  'Remember me',
+                                  style: TextStyle(
+                                    color: Colors.black45
+                                  ),
+                                )
+                              ]),
+                              GestureDetector(
+                                child: Text(
+                                  'Forgot password?',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: lightColorScheme.primary
+                                  ),
                                 ),
                               )
-                            ]),
-                            GestureDetector(
-                              child: Text(
-                                'Forgot password',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: lightColorScheme.primary
-                                ),
-                              ),
-                            )
-                          ],
-                        )
-                      ],
-                    )),
+                            ],
+                          ),
+                          const SizedBox(height: 20,),
+                          SizedBox(
+                            width: double.infinity,
+                            child: ElevatedButton(
+                              onPressed: (){}, 
+                              child:const Text('Sign Up')),
+                          )
+                        ],
+                      )),
+                ),
               )),
         ],
       ),

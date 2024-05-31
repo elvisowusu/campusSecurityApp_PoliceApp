@@ -62,7 +62,8 @@ class _SignInScreenState extends State<SignInScreen> {
                             decoration: InputDecoration(
                                 label: const Text('Email'),
                                 hintText: 'Enter Email',
-                                hintStyle: const TextStyle(color: Colors.black26),
+                                hintStyle:
+                                    const TextStyle(color: Colors.black26),
                                 border: OutlineInputBorder(
                                   borderSide: const BorderSide(
                                     color: Colors.black12,
@@ -76,7 +77,9 @@ class _SignInScreenState extends State<SignInScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 )),
                           ),
-                          const SizedBox(height: 20,),
+                          const SizedBox(
+                            height: 20,
+                          ),
                           TextFormField(
                             obscureText: true,
                             obscuringCharacter: '*',
@@ -103,12 +106,13 @@ class _SignInScreenState extends State<SignInScreen> {
                                   borderRadius: BorderRadius.circular(10),
                                 )),
                           ),
-                          const SizedBox(height: 20,),
+                          const SizedBox(
+                            height: 20,
+                          ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
+                              Row(children: [
                                 Checkbox(
                                   value: rememberPassword,
                                   onChanged: (bool? value) {
@@ -119,30 +123,33 @@ class _SignInScreenState extends State<SignInScreen> {
                                   activeColor: lightColorScheme.primary,
                                 ),
                                 const Text(
-                  
                                   'Remember me',
-                                  style: TextStyle(
-                                    color: Colors.black45
-                                  ),
+                                  style: TextStyle(color: Colors.black45),
                                 )
                               ]),
                               GestureDetector(
                                 child: Text(
                                   'Forgot password?',
                                   style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    color: lightColorScheme.primary
-                                  ),
+                                      fontWeight: FontWeight.bold,
+                                      color: lightColorScheme.primary),
                                 ),
                               )
                             ],
                           ),
-                          const SizedBox(height: 20,),
+                          const SizedBox(
+                            height: 20,
+                          ),
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                              onPressed: (){}, 
-                              child:const Text('Sign Up')),
+                                onPressed: () {
+                                  if (_signInformKey.currentState!.validate()) {
+                                    const SnackBar(
+                                        content: Text('Processing Data'));
+                                  }
+                                },
+                                child: const Text('Sign Up')),
                           )
                         ],
                       )),

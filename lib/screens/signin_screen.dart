@@ -1,3 +1,4 @@
+import 'package:cs_location_tracker_app/screens/forgot_password_screen.dart';
 import 'package:cs_location_tracker_app/screens/signup_screen.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
@@ -129,6 +130,13 @@ class _SignInScreenState extends State<SignInScreen> {
                                 )
                               ]),
                               GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (e) =>
+                                              const ForgotPasswordScreen()));
+                                },
                                 child: Text(
                                   'Forgot password?',
                                   style: TextStyle(
@@ -203,7 +211,10 @@ class _SignInScreenState extends State<SignInScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Text("Don't have an account? ", style: TextStyle(color: Colors.black45),),
+                              const Text(
+                                "Don't have an account? ",
+                                style: TextStyle(color: Colors.black45),
+                              ),
                               GestureDetector(
                                 onTap: () {
                                   Navigator.push(
@@ -212,9 +223,12 @@ class _SignInScreenState extends State<SignInScreen> {
                                           builder: (e) =>
                                               const SignUpScreen()));
                                 },
-                                child: Text('Sign up',style:TextStyle(
+                                child: Text(
+                                  'Sign up',
+                                  style: TextStyle(
                                       fontWeight: FontWeight.bold,
-                                      color: lightColorScheme.primary),),
+                                      color: lightColorScheme.primary),
+                                ),
                               )
                             ],
                           )

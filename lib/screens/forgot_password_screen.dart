@@ -12,7 +12,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   @override
   Widget build(BuildContext context) {
     return const CustomScaffold(
-      customContainer: Text('Forgot Password'),
+      customContainer: Text("Forgot password")
     );
   }
 }

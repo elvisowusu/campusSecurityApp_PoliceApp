@@ -1,7 +1,9 @@
+import 'package:cs_location_tracker_app/screens/signup_screen.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:icons_plus/icons_plus.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -157,32 +159,68 @@ class _SignInScreenState extends State<SignInScreen> {
                                                 'Please agree to the processing of personal data')));
                                   }
                                 },
-                                child: const Text('Sign Up',)),
+                                child: const Text(
+                                  'Sign Up',
+                                )),
                           ),
                           const SizedBox(
                             height: 35,
                           ),
-                           Row(
+                          Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Expanded(child: Divider(
+                              Expanded(
+                                  child: Divider(
                                 thickness: 0.7,
                                 color: Colors.grey.withOpacity(0.5),
                               )),
-                               const Padding(
+                              const Padding(
                                 padding: EdgeInsets.symmetric(
                                   vertical: 0,
                                   horizontal: 10,
                                 ),
-                                child: Text('Sign up with',style: TextStyle(color: Colors.black45),),
+                                child: Text(
+                                  'Sign up with',
+                                  style: TextStyle(color: Colors.black45),
                                 ),
-                              Expanded(child: Divider(
-                                thickness: 0.7,
-                                color: Colors.grey.withOpacity(0.5),
-                              ))
+                              ),
+                              Expanded(
+                                child: Divider(
+                                  thickness: 0.7,
+                                  color: Colors.grey.withOpacity(0.5),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [Logo(Logos.google)],
+                          ),
+                          const SizedBox(
+                            height: 20,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Text("Don't have an account? ", style: TextStyle(color: Colors.black45),),
+                              GestureDetector(
+                                onTap: () {
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (e) =>
+                                              const SignUpScreen()));
+                                },
+                                child: Text('Sign up',style:TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      color: lightColorScheme.primary),),
+                              )
                             ],
                           )
-                          ],
+                        ],
                       )),
                 ),
               )),

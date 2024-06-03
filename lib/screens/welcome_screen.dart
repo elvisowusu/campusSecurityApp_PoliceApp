@@ -4,7 +4,6 @@ import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/welcome_button.dart';
 import 'package:flutter/material.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
-import 'package:flutter/widgets.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key});

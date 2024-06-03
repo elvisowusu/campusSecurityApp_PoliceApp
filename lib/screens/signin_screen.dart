@@ -3,7 +3,6 @@ import 'package:cs_location_tracker_app/screens/signup_screen.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
-import 'package:icons_plus/icons_plus.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -203,7 +202,18 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
-                            children: [Logo(Logos.google)],
+                            children: [
+                              const FlutterLogo(
+                            size: 40,
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.g_mobiledata,
+                              size: 40,
+                            ),
+                          ),
+                            ],
                           ),
                           const SizedBox(
                             height: 20,

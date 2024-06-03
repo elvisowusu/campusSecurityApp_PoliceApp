@@ -4,6 +4,7 @@ import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:flutter/material.dart';
 import 'package:icons_plus/icons_plus.dart';
 
+
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
 
@@ -245,7 +246,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          Logo(Logos.google),
+                          const FlutterLogo(
+                            size: 40,
+                          ),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(
+                              Icons.g_mobiledata,
+                              size: 40,
+                            ),
+                          ),
                         ],
                       ),
                       const SizedBox(

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1042376308323",
+    "project_id": "campus-security-app-eee20",
+    "storage_bucket": "campus-security-app-eee20.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1042376308323:android:913d752e15f6f23c5faa56",
+        "android_client_info": {
+          "package_name": "com.example.cs_location_tracker_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9rrWyEgPUPc0LOkbLG6xiHY4S-AuoJs0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

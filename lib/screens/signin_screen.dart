@@ -1,7 +1,10 @@
+import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/forgot_password_screen.dart';
+import 'package:cs_location_tracker_app/screens/live_case_screen.dart';
 import 'package:cs_location_tracker_app/screens/signup_screen.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -14,6 +17,19 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _signInformKey = GlobalKey<FormState>();
   bool rememberPassword = true;
+
+  final FirebaseAuthService _auth = FirebaseAuthService();
+
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
@@ -54,6 +70,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             height: 30,
                           ),
                           TextFormField(
+                            controller: _emailController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter Email';
@@ -82,6 +99,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             height: 20,
                           ),
                           TextFormField(
+                            controller: _passwordController,
                             obscureText: true,
                             obscuringCharacter: '*',
                             validator: (value) {
@@ -203,14 +221,13 @@ class _SignInScreenState extends State<SignInScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.g_mobiledata,
-                              size: 40,
-                              color: Color.fromARGB(255, 57, 232, 51),
-                            )
-                          ),
+                              IconButton(
+                                  onPressed: () {},
+                                  icon: const Icon(
+                                    Icons.g_mobiledata,
+                                    size: 40,
+                                    color: Color.fromARGB(255, 57, 232, 51),
+                                  )),
                             ],
                           ),
                           const SizedBox(
@@ -248,4 +265,40 @@ class _SignInScreenState extends State<SignInScreen> {
       ),
     );
   }
+
+  void _signIn() async {
+  if (_signInformKey.currentState!.validate()) {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+   
+    
+    try {
+      User? user = await _auth.signIn(email, password);
+
+      if (user != null) {
+        // User is successfully created
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LiveCases()),
+          );
+        }
+      } else {
+        // Error happened
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sign In failed. Please try again.')),
+        );
+      }
+    } catch (e) {
+       // Print the error details to the console
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please complete the form and agree to the terms.')),
+    );
+  }
 }
+  }

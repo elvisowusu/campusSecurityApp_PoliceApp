@@ -172,9 +172,12 @@ class _SignInScreenState extends State<SignInScreen> {
                             width: double.infinity,
                             child: ElevatedButton(
                                 onPressed: _signIn,
-                                child: const Text(
-                                  'Sign In',
-                                )),
+                                //loading indicator
+                                child: _isSigningIn
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                    : const Text('Sign In')),
                           ),
                           const SizedBox(
                             height: 35,
@@ -257,38 +260,25 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _signIn() async {
-    //loader
-    setState(() {
-      _isSigningIn = true;
-    });
-
     if (_signInformKey.currentState!.validate()) {
+      //loader
+      setState(() {
+        _isSigningIn = true;
+      });
+
       String email = _emailController.text;
       String password = _passwordController.text;
 
-      try {
-        User? user = await _auth.signIn(email, password);
+      User? user = await _auth.signIn(email, password);
+      setState(() {
+        _isSigningIn = false;
+      });
 
-        if (user != null) {
-          // User is successfully created
-          if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const LiveCases()),
-            );
-          }
-        } else {
-          // Error happened
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Sign In failed. Please try again.')),
-          );
-        }
-      } catch (e) {
-        // Print the error details to the console
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
-        );
-      }
+      if (user != null) {
+        Navigator.push(context, MaterialPageRoute(builder: (e) => const LiveCases()));
+      } else{}
+
+
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

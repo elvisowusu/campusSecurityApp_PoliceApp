@@ -209,7 +209,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: _signUp,
-                          child: const Text('Sign up'),
+                          //loading indicator
+                          child: _isSigningUp?
+                                const CircularProgressIndicator(
+                                  color:Colors.white,
+                                  
+                                  ):
+                                const Text('Sign up'),
                         ),
                       ),
                       const SizedBox(
@@ -306,43 +312,31 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _signUp() async {
-    //loader
-  setState(() {
-      _isSigningUp = true;
-    });
-
-  if (_signUpFormKey.currentState!.validate() && agreePersonalData) {
-    String email = _emailController.text;
-    String password = _passwordController.text;
-   
     
-    try {
+    if (_signUpFormKey.currentState!.validate() && agreePersonalData) {
+      //loader
+      setState(() {
+        _isSigningUp = true;
+      });
+
+      String email = _emailController.text;
+      String password = _passwordController.text;
+
       User? user = await _auth.signUp(email, password);
+      setState(() {
+        _isSigningUp=false;
+      });
 
       if (user != null) {
-        // User is successfully created
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LiveCases()),
-          );
-        }
-      } else {
-        // Error happened
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sign up failed. Please try again.')),
-        );
-      }
-    } catch (e) {
-       // Print the error details to the console
+        Navigator.push(context, MaterialPageRoute(builder: (e) => const LiveCases()));
+      } else{}
+
+
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
+        const SnackBar(
+            content: Text('Please complete the form and agree to the terms.')),
       );
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please complete the form and agree to the terms.')),
-    );
   }
-}
 }

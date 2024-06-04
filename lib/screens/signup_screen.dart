@@ -245,9 +245,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          const FlutterLogo(
-                            size: 40,
-                          ),
                           IconButton(
                             onPressed: () {},
                             icon: const Icon(

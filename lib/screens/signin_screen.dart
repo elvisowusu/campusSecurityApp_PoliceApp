@@ -205,7 +205,9 @@ class _SignInScreenState extends State<SignInScreen> {
                             children: [
                           IconButton(
                             onPressed: () {},
-                            icon: const Icon
+                            icon: const Icon(
+                              Icons.g_mobiledata,
+                            )
                           ),
                             ],
                           ),

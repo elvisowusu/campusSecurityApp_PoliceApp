@@ -1,3 +1,6 @@
+import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
+import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class LiveCases extends StatefulWidget {
@@ -10,6 +13,13 @@ class LiveCases extends StatefulWidget {
 class _LiveCasesState extends State<LiveCases> {
   @override
   Widget build(BuildContext context) {
-    return const Text('see life cases');
+    return ElevatedButton(
+        onPressed: () {
+          FirebaseAuth.instance.signOut();
+          Navigator.push(context, 
+                    MaterialPageRoute(
+                      builder: (e)=> const WelcomeScreen()));
+        },
+        child: const Text("Sign Out"));
   }
 }

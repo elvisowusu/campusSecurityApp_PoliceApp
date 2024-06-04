@@ -1,8 +1,12 @@
+import 'dart:math';
+
+import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
+import 'package:cs_location_tracker_app/screens/live_case_screen.dart';
 import 'package:cs_location_tracker_app/screens/signin_screen.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -15,10 +19,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final _signUpFormKey = GlobalKey<FormState>();
   bool agreePersonalData = true;
 
+  final FirebaseAuthService _auth = FirebaseAuthService();
+
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  
+
   //now to prevent memory leaks, we need to dispose the controllers
   @override
   void dispose() {
@@ -28,11 +34,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.dispose();
   }
 
-
-
   @override
   Widget build(BuildContext context) {
-    return  CustomScaffold(
+    return CustomScaffold(
       image: 'assets/images/security.avif',
       customContainer: Column(
         children: [
@@ -74,6 +78,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       // full name
                       TextFormField(
+                        controller: _fullNameController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Full name';
@@ -105,6 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       // email
                       TextFormField(
+                        controller: _emailController,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Email';
@@ -136,6 +142,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       ),
                       // password
                       TextFormField(
+                        controller: _passwordController,
                         obscureText: true,
                         obscuringCharacter: '*',
                         validator: (value) {
@@ -312,4 +319,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
       ),
     );
   }
+
+  void _signUp() async {
+    String fullName = _fullNameController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    String? user = await _auth.signUp(email, password);
+
+    if (user != null) {
+      //user is successfully created
+      Navigator.push(
+          // ignore: use_build_context_synchronously
+          context, MaterialPageRoute(builder: (e) => const LiveCases()));
+          
+    }else{
+    //Error happened
+    }
+  } 
 }

@@ -206,10 +206,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: (){
-                            print('sign up button clicked');
-                            // _signUp();
-                          },
+                          onPressed: _signUp,
                           child: const Text('Sign up'),
                         ),
                       ),
@@ -310,11 +307,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
   if (_signUpFormKey.currentState!.validate() && agreePersonalData) {
     String email = _emailController.text;
     String password = _passwordController.text;
-     String fullName = _fullNameController.text; 
-   // Log the retrieved values
-    print('Full Name: $fullName');
-    print('Email: $email');
-    print('Password: $password');
+   
+    
     try {
       User? user = await _auth.signUp(email, password);
 

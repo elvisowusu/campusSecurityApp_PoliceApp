@@ -203,15 +203,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const FlutterLogo(
-                            size: 40,
-                          ),
                           IconButton(
                             onPressed: () {},
-                            icon: const Icon(
-                              Icons.g_mobiledata,
-                              size: 40,
-                            ),
+                            icon: const Icon
                           ),
                             ],
                           ),

@@ -250,6 +250,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             icon: const Icon(
                               Icons.g_mobiledata,
                               size: 40,
+                              color: Color.fromARGB(255, 57, 232, 51),
                             ),
                           ),
                         ],

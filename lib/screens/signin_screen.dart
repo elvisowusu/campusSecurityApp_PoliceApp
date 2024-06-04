@@ -169,21 +169,9 @@ class _SignInScreenState extends State<SignInScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                                onPressed: () {
-                                  if (_signInformKey.currentState!.validate() &&
-                                      rememberPassword) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text('Processing data')));
-                                  } else if (!rememberPassword) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                            content: Text(
-                                                'Please agree to the processing of personal data')));
-                                  }
-                                },
+                                onPressed:_signIn,
                                 child: const Text(
-                                  'Sign Up',
+                                  'Sign In',
                                 )),
                           ),
                           const SizedBox(
@@ -203,7 +191,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                   horizontal: 10,
                                 ),
                                 child: Text(
-                                  'Sign up with',
+                                  'Sign In with',
                                   style: TextStyle(color: Colors.black45),
                                 ),
                               ),

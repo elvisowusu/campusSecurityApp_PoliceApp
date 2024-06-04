@@ -16,6 +16,8 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _signUpFormKey = GlobalKey<FormState>();
   bool agreePersonalData = true;
+  //loader
+  bool _isSigningUp = false;
 
   final FirebaseAuthService _auth = FirebaseAuthService();
 
@@ -304,6 +306,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _signUp() async {
+    //loader
+  setState(() {
+      _isSigningUp = true;
+    });
+
   if (_signUpFormKey.currentState!.validate() && agreePersonalData) {
     String email = _emailController.text;
     String password = _passwordController.text;

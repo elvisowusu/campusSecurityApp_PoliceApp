@@ -17,6 +17,8 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   final _signInformKey = GlobalKey<FormState>();
   bool rememberPassword = true;
+  //loader
+  bool _isSigningIn = false;
 
   final FirebaseAuthService _auth = FirebaseAuthService();
 
@@ -169,7 +171,7 @@ class _SignInScreenState extends State<SignInScreen> {
                           SizedBox(
                             width: double.infinity,
                             child: ElevatedButton(
-                                onPressed:_signIn,
+                                onPressed: _signIn,
                                 child: const Text(
                                   'Sign In',
                                 )),
@@ -255,38 +257,43 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _signIn() async {
-  if (_signInformKey.currentState!.validate()) {
-    String email = _emailController.text;
-    String password = _passwordController.text;
-   
-    
-    try {
-      User? user = await _auth.signIn(email, password);
+    //loader
+    setState(() {
+      _isSigningIn = true;
+    });
 
-      if (user != null) {
-        // User is successfully created
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const LiveCases()),
+    if (_signInformKey.currentState!.validate()) {
+      String email = _emailController.text;
+      String password = _passwordController.text;
+
+      try {
+        User? user = await _auth.signIn(email, password);
+
+        if (user != null) {
+          // User is successfully created
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LiveCases()),
+            );
+          }
+        } else {
+          // Error happened
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Sign In failed. Please try again.')),
           );
         }
-      } else {
-        // Error happened
+      } catch (e) {
+        // Print the error details to the console
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sign In failed. Please try again.')),
+          SnackBar(content: Text('Error: ${e.toString()}')),
         );
       }
-    } catch (e) {
-       // Print the error details to the console
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${e.toString()}')),
+        const SnackBar(
+            content: Text('Please complete the form and agree to the terms.')),
       );
     }
-  } else {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please complete the form and agree to the terms.')),
-    );
   }
 }
-  }

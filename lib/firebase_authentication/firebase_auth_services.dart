@@ -23,7 +23,7 @@ class FirebaseAuthService {
         email: email,
         password: password,
       );
-      return userCredential.user!;
+      return userCredential.user;
     } catch (e) {
       // Handle sign-in errors
       return null;

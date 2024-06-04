@@ -206,7 +206,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _signUp,
+                          onPressed: (){
+                            print('sign up button clicked');
+                            // _signUp();
+                          },
                           child: const Text('Sign up'),
                         ),
                       ),
@@ -304,37 +307,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _signUp() async {
-    if (_signUpFormKey.currentState!.validate() && agreePersonalData) {
-      String fullName = _fullNameController.text;
-      String email = _emailController.text;
-      String password = _passwordController.text;
+  if (_signUpFormKey.currentState!.validate() && agreePersonalData) {
+    String email = _emailController.text;
+    String password = _passwordController.text;
+     String fullName = _fullNameController.text; 
+   // Log the retrieved values
+    print('Full Name: $fullName');
+    print('Email: $email');
+    print('Password: $password');
+    try {
+      User? user = await _auth.signUp(email, password);
 
-      try {
-        User? user = await _auth.signUp(email, password);
-
-        if (user != null) {
-          // User is successfully created
-          if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const LiveCases()),
-            );
-          }
-        } else {
-          // Error happened
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Sign up failed. Please try again.')),
+      if (user != null) {
+        // User is successfully created
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const LiveCases()),
           );
         }
-      } catch (e) {
+      } else {
+        // Error happened
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: ${e.toString()}')),
+          const SnackBar(content: Text('Sign up failed. Please try again.')),
         );
       }
-    } else {
+    } catch (e) {
+       // Print the error details to the console
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please complete the form and agree to the terms.')),
+        SnackBar(content: Text('Error: ${e.toString()}')),
       );
     }
+  } else {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please complete the form and agree to the terms.')),
+    );
   }
+}
 }

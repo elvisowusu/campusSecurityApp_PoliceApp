@@ -239,7 +239,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ],
                       ),
                       const SizedBox(
-                        height: 10.0,
+                        height: 5.0,
                       ),
                       // sign up social media logo
                       Row(

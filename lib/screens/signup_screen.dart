@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/live_case_screen.dart';
 import 'package:cs_location_tracker_app/screens/signin_screen.dart';
@@ -25,7 +23,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  //now to prevent memory leaks, we need to dispose the controllers
+  // Prevent memory leaks by disposing the controllers
   @override
   void dispose() {
     _fullNameController.dispose();
@@ -58,13 +56,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               child: SingleChildScrollView(
-                // get started form
+                // Get started form
                 child: Form(
                   key: _signUpFormKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // get started text
+                      // Get started text
                       Text(
                         'Get Started',
                         style: TextStyle(
@@ -76,7 +74,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 21.0,
                       ),
-                      // full name
+                      // Full name
                       TextFormField(
                         controller: _fullNameController,
                         validator: (value) {
@@ -108,7 +106,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
-                      // email
+                      // Email
                       TextFormField(
                         controller: _emailController,
                         validator: (value) {
@@ -140,7 +138,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
-                      // password
+                      // Password
                       TextFormField(
                         controller: _passwordController,
                         obscureText: true,
@@ -174,7 +172,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
-                      // i agree to the processing
+                      // I agree to the processing
                       Row(
                         children: [
                           Checkbox(
@@ -204,33 +202,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
-                      // signup button
+                      // Signup button
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: () {
-                            if (_signUpFormKey.currentState!.validate() &&
-                                agreePersonalData) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text('Processing Data'),
-                                ),
-                              );
-                            } else if (!agreePersonalData) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                    content: Text(
-                                        'Please agree to the processing of personal data')),
-                              );
-                            }
-                          },
+                          onPressed: _signUp,
                           child: const Text('Sign up'),
                         ),
                       ),
                       const SizedBox(
                         height: 15.0,
                       ),
-                      // sign up divider
+                      // Sign up divider
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -263,7 +246,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 5.0,
                       ),
-                      // sign up social media logo
+                      // Sign up social media logo
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
@@ -280,7 +263,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
-                      // already have an account
+                      // Already have an account
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -321,20 +304,37 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _signUp() async {
-    String fullName = _fullNameController.text;
-    String email = _emailController.text;
-    String password = _passwordController.text;
+    if (_signUpFormKey.currentState!.validate() && agreePersonalData) {
+      String fullName = _fullNameController.text;
+      String email = _emailController.text;
+      String password = _passwordController.text;
 
-    String? user = await _auth.signUp(email, password);
+      try {
+        User? user = await _auth.signUp(email, password);
 
-    if (user != null) {
-      //user is successfully created
-      Navigator.push(
-          // ignore: use_build_context_synchronously
-          context, MaterialPageRoute(builder: (e) => const LiveCases()));
-          
-    }else{
-    //Error happened
+        if (user != null) {
+          // User is successfully created
+          if (mounted) {
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (context) => const LiveCases()),
+            );
+          }
+        } else {
+          // Error happened
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Sign up failed. Please try again.')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${e.toString()}')),
+        );
+      }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please complete the form and agree to the terms.')),
+      );
     }
-  } 
+  }
 }

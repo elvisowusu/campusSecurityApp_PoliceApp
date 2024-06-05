@@ -17,7 +17,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _signUpFormKey = GlobalKey<FormState>();
   bool agreePersonalData = true;
-  //loader
+  // Loader
   bool _isSigningUp = false;
 
   final FirebaseAuthService _auth = FirebaseAuthService();
@@ -26,12 +26,54 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  // Prevent memory leaks by disposing the controllers
+  // Define FocusNodes
+  final FocusNode _fullNameFocusNode = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
+  // Track error messages for fields
+  String? _fullNameError;
+  String? _emailError;
+  String? _passwordError;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Add listeners to clear errors on focus
+    _fullNameFocusNode.addListener(() {
+      if (_fullNameFocusNode.hasFocus) {
+        setState(() {
+          _fullNameError = null;
+        });
+      }
+    });
+
+    _emailFocusNode.addListener(() {
+      if (_emailFocusNode.hasFocus) {
+        setState(() {
+          _emailError = null;
+        });
+      }
+    });
+
+    _passwordFocusNode.addListener(() {
+      if (_passwordFocusNode.hasFocus) {
+        setState(() {
+          _passwordError = null;
+        });
+      }
+    });
+  }
+
   @override
   void dispose() {
     _fullNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _fullNameFocusNode.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -80,6 +122,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       // Full name
                       TextFormField(
                         controller: _fullNameController,
+                        focusNode: _fullNameFocusNode,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Full name';
@@ -92,6 +136,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintStyle: const TextStyle(
                             color: Colors.black26,
                           ),
+                          errorText: _fullNameError,
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
                               color: Colors.black12, // Default border color
@@ -112,6 +157,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       // Email
                       TextFormField(
                         controller: _emailController,
+                        focusNode: _emailFocusNode,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Email';
@@ -124,6 +171,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintStyle: const TextStyle(
                             color: Colors.black26,
                           ),
+                          errorText: _emailError,
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
                               color: Colors.black12, // Default border color
@@ -144,8 +192,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       // Password
                       TextFormField(
                         controller: _passwordController,
+                        focusNode: _passwordFocusNode,
                         obscureText: true,
                         obscuringCharacter: '*',
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Please enter Password';
@@ -158,6 +208,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           hintStyle: const TextStyle(
                             color: Colors.black26,
                           ),
+                          errorText: _passwordError,
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
                               color: Colors.black12, // Default border color
@@ -209,9 +260,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: (){
-                            _signUp();
-                          },
+                          onPressed: _signUp,
                           //loading indicator
                           child: _isSigningUp
                               ? const CircularProgressIndicator(
@@ -336,6 +385,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
         showToast(message: "Some error happened");
       }
     } else {
+      setState(() {
+        // Update error messages if form is not valid
+        _fullNameError = _fullNameController.text.isEmpty ? 'Please enter Full name' : null;
+        _emailError = _emailController.text.isEmpty ? 'Please enter Email' : null;
+        _passwordError = _passwordController.text.isEmpty ? 'Please enter Password' : null;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Please complete the form and agree to the terms.')),

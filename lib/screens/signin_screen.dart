@@ -7,6 +7,7 @@ import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:icons_plus/icons_plus.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -107,7 +108,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           TextFormField(
                             controller: _emailController,
                             focusNode: _emailFocusNode,
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter Email';
@@ -117,7 +119,8 @@ class _SignInScreenState extends State<SignInScreen> {
                             decoration: InputDecoration(
                                 label: const Text('Email'),
                                 hintText: 'Enter Email',
-                                hintStyle: const TextStyle(color: Colors.black26),
+                                hintStyle:
+                                    const TextStyle(color: Colors.black26),
                                 errorText: _emailError,
                                 border: OutlineInputBorder(
                                   borderSide: const BorderSide(
@@ -140,7 +143,8 @@ class _SignInScreenState extends State<SignInScreen> {
                             focusNode: _passwordFocusNode,
                             obscureText: true,
                             obscuringCharacter: '*',
-                            autovalidateMode: AutovalidateMode.onUserInteraction,
+                            autovalidateMode:
+                                AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter Password';
@@ -155,7 +159,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                 ),
                                 errorText: _passwordError,
                                 border: OutlineInputBorder(
-                                    borderSide: const BorderSide(color: Colors.black12),
+                                    borderSide:
+                                        const BorderSide(color: Colors.black12),
                                     borderRadius: BorderRadius.circular(10)),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(
@@ -217,51 +222,32 @@ class _SignInScreenState extends State<SignInScreen> {
                                     : const Text('Sign In')),
                           ),
                           const SizedBox(
-                            height: 35,
+                            height: 25,
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Expanded(
-                                  child: Divider(
-                                thickness: 0.7,
-                                color: Colors.grey.withOpacity(0.5),
-                              )),
-                              const Padding(
-                                padding: EdgeInsets.symmetric(
-                                  vertical: 0,
-                                  horizontal: 10,
+                          SizedBox(
+                            child: ElevatedButton(
+                                onPressed: () {},
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.red,
                                 ),
-                                child: Text(
-                                  'Sign In with',
-                                  style: TextStyle(color: Colors.black45),
-                                ),
-                              ),
-                              Expanded(
-                                child: Divider(
-                                  thickness: 0.7,
-                                  color: Colors.grey.withOpacity(0.5),
-                                ),
-                              ),
-                            ],
+                                child: const Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(Iconsax.google_1_bold,
+                                        color: Colors.white),
+                                    SizedBox(width: 5),
+                                    Text(
+                                      'Sign in with Google',
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                )),
                           ),
                           const SizedBox(
-                            height: 5,
-                          ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              IconButton(
-                                  onPressed: () {},
-                                  icon: const Icon(
-                                    Icons.g_mobiledata,
-                                    size: 40,
-                                    color: Color.fromARGB(255, 57, 232, 51),
-                                  )),
-                            ],
-                          ),
-                          const SizedBox(
-                            height: 20,
+                            height: 15,
                           ),
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
@@ -321,8 +307,10 @@ class _SignInScreenState extends State<SignInScreen> {
     } else {
       setState(() {
         // Update error messages if form is not valid
-        _emailError = _emailController.text.isEmpty ? 'Please enter Email' : null;
-        _passwordError = _passwordController.text.isEmpty ? 'Please enter Password' : null;
+        _emailError =
+            _emailController.text.isEmpty ? 'Please enter Email' : null;
+        _passwordError =
+            _passwordController.text.isEmpty ? 'Please enter Password' : null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

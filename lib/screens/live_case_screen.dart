@@ -1,5 +1,4 @@
 import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
-import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

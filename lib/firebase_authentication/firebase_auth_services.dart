@@ -32,8 +32,13 @@ class FirebaseAuthService {
         password: password,
       );
       return userCredential.user;
-    } catch (e) {
+    } on FirebaseAuthException catch (e) {
       // Handle sign-in errors
+      if(e.code == 'user-not-found' || e.code == 'wrong-password') {
+        showToast(message: 'Invalid email or password');
+      } else {
+        showToast(message: 'An error occurred: ${e.code}');
+      }
       return null;
     }
   }

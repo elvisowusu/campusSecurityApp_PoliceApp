@@ -1,3 +1,4 @@
+import 'package:cs_location_tracker_app/common/toast.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/forgot_password_screen.dart';
 import 'package:cs_location_tracker_app/screens/live_case_screen.dart';
@@ -275,10 +276,12 @@ class _SignInScreenState extends State<SignInScreen> {
       });
 
       if (user != null) {
-        Navigator.push(context, MaterialPageRoute(builder: (e) => const LiveCases()));
-      } else{}
-
-
+        showToast(message: 'Sign in successful!');
+        Navigator.push(
+            context, MaterialPageRoute(builder: (e) => const LiveCases()));
+      } else {
+        showToast(message: 'Sign in failed!');
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

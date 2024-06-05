@@ -1,3 +1,4 @@
+import 'package:cs_location_tracker_app/common/toast.dart';
 import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ class _LiveCasesState extends State<LiveCases> {
     return ElevatedButton(
         onPressed: () {
           FirebaseAuth.instance.signOut();
+          showToast(message: 'Signed out');
           Navigator.push(context, 
                     MaterialPageRoute(
                       builder: (e)=> const WelcomeScreen()));

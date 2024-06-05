@@ -1,3 +1,4 @@
+import 'package:cs_location_tracker_app/common/toast.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/live_case_screen.dart';
 import 'package:cs_location_tracker_app/screens/signin_screen.dart';
@@ -208,14 +209,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       SizedBox(
                         width: double.infinity,
                         child: ElevatedButton(
-                          onPressed: _signUp,
+                          onPressed: (){
+                            _signUp();
+                          },
                           //loading indicator
-                          child: _isSigningUp?
-                                const CircularProgressIndicator(
-                                  color:Colors.white,
-                                  
-                                  ):
-                                const Text('Sign up'),
+                          child: _isSigningUp
+                              ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                )
+                              : const Text('Sign up'),
                         ),
                       ),
                       const SizedBox(
@@ -312,7 +314,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   void _signUp() async {
-    
     if (_signUpFormKey.currentState!.validate() && agreePersonalData) {
       //loader
       setState(() {
@@ -324,14 +325,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
       User? user = await _auth.signUp(email, password);
       setState(() {
-        _isSigningUp=false;
+        _isSigningUp = false;
       });
 
       if (user != null) {
-        Navigator.push(context, MaterialPageRoute(builder: (e) => const LiveCases()));
-      } else{}
-
-
+        showToast(message: "Sign up successful");
+        Navigator.push(
+            context, MaterialPageRoute(builder: (e) => const LiveCases()));
+      } else {
+        showToast(message: "Some error happened");
+      }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

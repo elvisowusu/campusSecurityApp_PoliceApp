@@ -26,10 +26,42 @@ class _SignInScreenState extends State<SignInScreen> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  // Define FocusNodes
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passwordFocusNode = FocusNode();
+
+  // Track error messages for fields
+  String? _emailError;
+  String? _passwordError;
+
+  @override
+  void initState() {
+    super.initState();
+
+    // Add listeners to clear errors on focus
+    _emailFocusNode.addListener(() {
+      if (_emailFocusNode.hasFocus) {
+        setState(() {
+          _emailError = null;
+        });
+      }
+    });
+
+    _passwordFocusNode.addListener(() {
+      if (_passwordFocusNode.hasFocus) {
+        setState(() {
+          _passwordError = null;
+        });
+      }
+    });
+  }
+
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
+    _emailFocusNode.dispose();
+    _passwordFocusNode.dispose();
     super.dispose();
   }
 
@@ -74,6 +106,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           TextFormField(
                             controller: _emailController,
+                            focusNode: _emailFocusNode,
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter Email';
@@ -83,8 +117,8 @@ class _SignInScreenState extends State<SignInScreen> {
                             decoration: InputDecoration(
                                 label: const Text('Email'),
                                 hintText: 'Enter Email',
-                                hintStyle:
-                                    const TextStyle(color: Colors.black26),
+                                hintStyle: const TextStyle(color: Colors.black26),
+                                errorText: _emailError,
                                 border: OutlineInputBorder(
                                   borderSide: const BorderSide(
                                     color: Colors.black12,
@@ -103,8 +137,10 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           TextFormField(
                             controller: _passwordController,
+                            focusNode: _passwordFocusNode,
                             obscureText: true,
                             obscuringCharacter: '*',
+                            autovalidateMode: AutovalidateMode.onUserInteraction,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Please enter Password';
@@ -117,9 +153,9 @@ class _SignInScreenState extends State<SignInScreen> {
                                 hintStyle: const TextStyle(
                                   color: Colors.black26,
                                 ),
+                                errorText: _passwordError,
                                 border: OutlineInputBorder(
-                                    borderSide:
-                                        const BorderSide(color: Colors.black12),
+                                    borderSide: const BorderSide(color: Colors.black12),
                                     borderRadius: BorderRadius.circular(10)),
                                 enabledBorder: OutlineInputBorder(
                                   borderSide: const BorderSide(
@@ -283,6 +319,11 @@ class _SignInScreenState extends State<SignInScreen> {
         showToast(message: 'Sign in failed!');
       }
     } else {
+      setState(() {
+        // Update error messages if form is not valid
+        _emailError = _emailController.text.isEmpty ? 'Please enter Email' : null;
+        _passwordError = _passwordController.text.isEmpty ? 'Please enter Password' : null;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
             content: Text('Please complete the form and agree to the terms.')),

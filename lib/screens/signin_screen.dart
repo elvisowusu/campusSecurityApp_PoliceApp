@@ -322,27 +322,28 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   _signInWithGoogle() async {
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+    final GoogleSignIn _googleSignIn = GoogleSignIn();
 
-  try {
-    final GoogleSignInAccount? googleSignInAccount = await _googleSignIn.signIn();
+    try {
+      final GoogleSignInAccount? googleSignInAccount =
+          await _googleSignIn.signIn();
 
-    if (googleSignInAccount != null) {
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount.authentication;
+      if (googleSignInAccount != null) {
+        final GoogleSignInAuthentication googleSignInAuthentication =
+            await googleSignInAccount.authentication;
 
-      final AuthCredential credential = GoogleAuthProvider.credential(
-          idToken: googleSignInAuthentication.idToken,
-          accessToken: googleSignInAuthentication.accessToken);
+        final AuthCredential credential = GoogleAuthProvider.credential(
+            idToken: googleSignInAuthentication.idToken,
+            accessToken: googleSignInAuthentication.accessToken);
 
-      await _firebaseAuth.signInWithCredential(credential);
-      Navigator.push(context, MaterialPageRoute(builder: (e) => const LiveCases()));
-    } else {
-      showToast(message: 'Google sign-in aborted!');
+        await _firebaseAuth.signInWithCredential(credential);
+        Navigator.push(
+            context, MaterialPageRoute(builder: (e) => const LiveCases()));
+      } else {
+        showToast(message: 'Google sign-in aborted!');
+      }
+    } catch (error) {
+      showToast(message: 'Sign in with Google failed!');
     }
-  } catch (error) {
-    showToast(message: 'Sign in with Google failed!');
   }
-}
-
 }

@@ -2,8 +2,6 @@ import 'package:cs_location_tracker_app/components/old_reports_cases/chat_notifi
 import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
-
-
 class EmergencyNotifications extends StatefulWidget {
   const EmergencyNotifications({super.key});
 
@@ -11,27 +9,26 @@ class EmergencyNotifications extends StatefulWidget {
   State<EmergencyNotifications> createState() => _EmergencyNotificationsState();
 }
 
-
 class _EmergencyNotificationsState extends State<EmergencyNotifications> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        const  Text('Emergency notifications'),
-        FloatingActionButton(
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        appBar: AppBar(
+          title: const Text('Live Cases'),
+          centerTitle: true,
+          backgroundColor: Colors.blue,
+        ),
+        floatingActionButton:  FloatingActionButton(
             onPressed: () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (e) => const ChatNotifications()));
-            },
-            
+            }, 
+            tooltip: 'Old Cases',
             child: const Icon(Icons.chat_rounded)
             ),
-            FloatingActionButton(onPressed:() {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (e) => const WelcomeScreen()));},
-              child:const Icon(Icons.chat_rounded),
-             )
-      ],
+      ),
     );
   }
 }

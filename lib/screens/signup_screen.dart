@@ -1,6 +1,5 @@
 import 'package:cs_location_tracker_app/common/toast.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
-import 'package:cs_location_tracker_app/screens/live_case_screen.dart';
 import 'package:cs_location_tracker_app/screens/signin_screen.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
@@ -380,7 +379,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (user != null) {
         showToast(message: "Sign up successful");
         Navigator.push(
-            context, MaterialPageRoute(builder: (e) => const LiveCases()));
+            context, MaterialPageRoute(builder: (e) => const SignInScreen()));
       } else {
         showToast(message: "Some error happened");
       }

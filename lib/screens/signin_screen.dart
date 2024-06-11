@@ -1,7 +1,7 @@
 import 'package:cs_location_tracker_app/common/toast.dart';
+import 'package:cs_location_tracker_app/components/live_cases/emergency_notification.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/forgot_password_screen.dart';
-import 'package:cs_location_tracker_app/screens/live_case_screen.dart';
 import 'package:cs_location_tracker_app/screens/signup_screen.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
@@ -302,7 +302,7 @@ class _SignInScreenState extends State<SignInScreen> {
       if (user != null) {
         showToast(message: 'Sign in successful!');
         Navigator.push(
-            context, MaterialPageRoute(builder: (e) => const LiveCases()));
+            context, MaterialPageRoute(builder: (e) => const EmergencyNotifications()));
       } else {
         showToast(message: 'Sign in failed!');
       }
@@ -338,7 +338,7 @@ class _SignInScreenState extends State<SignInScreen> {
 
         await _firebaseAuth.signInWithCredential(credential);
         Navigator.push(
-            context, MaterialPageRoute(builder: (e) => const LiveCases()));
+            context, MaterialPageRoute(builder: (e) => const EmergencyNotifications()));
       } else {
         showToast(message: 'Google sign-in aborted!');
       }

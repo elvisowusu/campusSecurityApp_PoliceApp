@@ -26,6 +26,7 @@ class _ChatNotificationsState extends State<ChatNotifications> {
                 Navigator.push(context,
                     MaterialPageRoute(builder: (e) => const ChatRoom()));
               },
+              child: const Text('chat room'),
             )
           ],
         ),

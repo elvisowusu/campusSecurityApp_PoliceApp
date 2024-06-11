@@ -1,3 +1,5 @@
+import 'package:cs_location_tracker_app/components/old_reports_cases/custom_chat_button.dart';
+import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -10,8 +12,37 @@ class ChatRoom extends StatefulWidget {
 class _ChatRoomState extends State<ChatRoom> {
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: const  Text('chat Room'),
-    );
+    return DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text(
+              'Cases',
+              style: TextStyle(letterSpacing: 1),
+            ),
+            elevation: 1,
+            actions: [
+              CustomIconButton(onTap: () {}, icon: Icons.search),
+              CustomIconButton(
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (e) => const WelcomeScreen()));
+                  },
+                  icon: Icons.logout),
+            ],
+            bottom: const TabBar(
+                indicatorWeight: 3,
+                labelStyle: TextStyle(fontWeight: FontWeight.bold),
+                splashFactory: NoSplash.splashFactory,
+                tabs: [
+                  Tab(text: 'CHAT'),
+                  Tab(
+                    text: 'Calls',
+                  )
+                ]),
+          ),
+        ));
   }
 }

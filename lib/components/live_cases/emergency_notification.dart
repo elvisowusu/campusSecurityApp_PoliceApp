@@ -1,5 +1,4 @@
 import 'package:cs_location_tracker_app/components/old_reports_cases/chat_notifications.dart';
-import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
 class EmergencyNotifications extends StatefulWidget {

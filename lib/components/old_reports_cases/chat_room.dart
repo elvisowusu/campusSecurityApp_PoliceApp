@@ -43,6 +43,10 @@ class _ChatRoomState extends State<ChatRoom> {
                   )
                 ]),
           ),
+          body: const TabBarView(
+            children: [
+
+            ])
         ));
   }
 }

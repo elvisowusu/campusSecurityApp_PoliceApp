@@ -16,8 +16,8 @@ class CustomIconButton extends StatelessWidget {
           iconSize: 22,
           padding: EdgeInsets.zero,
           constraints: const BoxConstraints(
-            minWidth: 45,
-            minHeight: 45,
+            minWidth: 40,
+            minHeight: 40,
           ),
           icon: Icon(
             icon,

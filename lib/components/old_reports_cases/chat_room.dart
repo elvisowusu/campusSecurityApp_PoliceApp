@@ -1,4 +1,6 @@
+import 'package:cs_location_tracker_app/components/old_reports_cases/call_page.dart';
 import 'package:cs_location_tracker_app/components/old_reports_cases/custom_chat_button.dart';
+import 'package:cs_location_tracker_app/components/old_reports_cases/main_chat_page.dart';
 import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +19,7 @@ class _ChatRoomState extends State<ChatRoom> {
         child: Scaffold(
           appBar: AppBar(
             title: const Text(
-              'Cases',
+              'Report Cases',
               style: TextStyle(letterSpacing: 1),
             ),
             elevation: 1,
@@ -33,7 +35,7 @@ class _ChatRoomState extends State<ChatRoom> {
                   icon: Icons.logout),
             ],
             bottom: const TabBar(
-                indicatorWeight: 3,
+                indicatorWeight: 2,
                 labelStyle: TextStyle(fontWeight: FontWeight.bold),
                 splashFactory: NoSplash.splashFactory,
                 tabs: [
@@ -45,7 +47,8 @@ class _ChatRoomState extends State<ChatRoom> {
           ),
           body: const TabBarView(
             children: [
-
+              MainChatPage(),
+              CallPage()
             ])
         ));
   }

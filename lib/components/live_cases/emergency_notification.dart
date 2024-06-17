@@ -1,3 +1,4 @@
+import 'package:cs_location_tracker_app/components/live_cases/map_area.dart';
 import 'package:cs_location_tracker_app/components/old_reports_cases/chat_room.dart';
 import 'package:flutter/material.dart';
 
@@ -19,15 +20,50 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
           centerTitle: true,
           backgroundColor: Colors.blue,
         ),
-        floatingActionButton:  FloatingActionButton(
+        body: ListView.builder(
+          itemCount: notifications.length,
+          itemBuilder: (context, index) {
+            final notification = notifications[index];
+            return ListTile(
+              leading: CircleAvatar(
+                child: Text(notification.contactName[0]),
+              ),
+              title: Text(notification.contactName),
+              subtitle: Text(notification.message),
+              onTap: () {
+                // Navigate to individual chat room
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => MapArea(contact: notification.contactName ),
+                  ),
+                );
+              },
+            );
+          },
+        ),
+        floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (e) => const ChatRoom() ));
-            }, 
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (e) => const ChatRoom()));
+            },
             tooltip: 'Old Cases',
-            child: const Icon(Icons.chat_rounded)
-            ),
+            child: const Icon(Icons.chat_rounded)),
       ),
     );
   }
 }
+
+class Notification {
+  final String contactName;
+  final String message;
+
+  Notification({required this.contactName, required this.message});
+}
+
+List<Notification> notifications = [
+  Notification(
+    contactName: 'John Doe',
+    message: 'In Danger',
+  ),
+];

@@ -1,6 +1,6 @@
 import 'package:cs_location_tracker_app/components/old_reports_cases/call_page.dart';
 import 'package:cs_location_tracker_app/components/old_reports_cases/custom_chat_button.dart';
-import 'package:cs_location_tracker_app/components/old_reports_cases/main_chat_page.dart';
+import 'package:cs_location_tracker_app/components/old_reports_cases/notifications.dart';
 import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 

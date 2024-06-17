@@ -35,27 +35,24 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>const MapArea(),
+                    builder: (context) => const MapArea(),
                   ),
                 );
               },
             );
           },
         ),
-        floatingActionButton:  FloatingActionButton(
+        floatingActionButton: FloatingActionButton(
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (e) => const ChatRoom() ));
-            }, 
+              Navigator.push(
+                  context, MaterialPageRoute(builder: (e) => const ChatRoom()));
+            },
             tooltip: 'Old Cases',
-            child: const Icon(Icons.chat_rounded)
-            ),
+            child: const Icon(Icons.chat_rounded)),
       ),
     );
   }
 }
-
-
 
 class Notification {
   final String contactName;
@@ -65,5 +62,8 @@ class Notification {
 }
 
 List<Notification> notifications = [
-  Notification(contactName: 'John Doe', message: 'In Danger', ),
+  Notification(
+    contactName: 'John Doe',
+    message: 'In Danger',
+  ),
 ];

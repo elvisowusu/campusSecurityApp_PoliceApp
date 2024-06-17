@@ -5,25 +5,27 @@ class MapArea extends StatefulWidget {
   const MapArea({super.key});
 
   @override
-  State<MapArea> createState() => _MapAreaState();
+  _MapAreaState createState() => _MapAreaState();
 }
 
 class _MapAreaState extends State<MapArea> {
-  late GoogleMapController mapController;
+  GoogleMapController? _mapController;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Google '),
+        title: const Text('Google Map'),
       ),
       body: GoogleMap(
-        onMapCreated: (GoogleMapController controller) {
-          mapController = controller;
+        onMapCreated: (controller) {
+          setState(() {
+            _mapController = controller;
+          });
         },
         initialCameraPosition: const CameraPosition(
-          target: LatLng(37.7749, -122.4194), // Initial map location
-          zoom: 12.0, // Initial zoom level
+          target: LatLng(37.7749, -122.4194), // Set initial map coordinates
+          zoom: 12.0, // Set initial zoom level
         ),
       ),
     );

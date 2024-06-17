@@ -1,3 +1,4 @@
+import 'package:cs_location_tracker_app/components/live_cases/map_area.dart';
 import 'package:cs_location_tracker_app/components/old_reports_cases/chat_room.dart';
 import 'package:flutter/material.dart';
 
@@ -19,6 +20,28 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
           centerTitle: true,
           backgroundColor: Colors.blue,
         ),
+        body: ListView.builder(
+          itemCount: notifications.length,
+          itemBuilder: (context, index) {
+            final notification = notifications[index];
+            return ListTile(
+              leading: CircleAvatar(
+                child: Text(notification.contactName[0]),
+              ),
+              title: Text(notification.contactName),
+              subtitle: Text(notification.message),
+              onTap: () {
+                // Navigate to individual chat room
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>const MapArea(),
+                  ),
+                );
+              },
+            );
+          },
+        ),
         floatingActionButton:  FloatingActionButton(
             onPressed: () {
               Navigator.push(context,
@@ -31,3 +54,16 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
     );
   }
 }
+
+
+
+class Notification {
+  final String contactName;
+  final String message;
+
+  Notification({required this.contactName, required this.message});
+}
+
+List<Notification> notifications = [
+  Notification(contactName: 'John Doe', message: 'In Danger', ),
+];

@@ -43,6 +43,7 @@ dependencies:
   cloud_firestore: ^4.17.5
   firebase_storage: ^11.7.7
   flutter_riverpod: ^2.0.0-dev.9
+  google_maps_flutter: ^2.6.1
 
 dev_dependencies:
   flutter_test:

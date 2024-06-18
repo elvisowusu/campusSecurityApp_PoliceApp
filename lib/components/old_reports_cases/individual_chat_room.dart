@@ -1,3 +1,4 @@
+import 'package:cs_location_tracker_app/widgets/chat_textfield.dart';
 import 'package:flutter/material.dart';
 
 class IndividualChatPage extends StatelessWidget {
@@ -11,9 +12,25 @@ class IndividualChatPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(contact),
       ),
-      body: const Center(
-        child: Text('Individual Chat Room'),
-      ),
+      body:  Stack(
+        children: [
+          const Image(
+            image: AssetImage('assets/images/chatbg.jpg'),
+            width: double.maxFinite,
+            height: double.maxFinite,
+            fit: BoxFit.cover,
+          ),
+          Column(
+            children: [
+              Expanded(
+                child: Container(
+                ),
+              ),
+              const ChatTextField(receriverId: '1')
+            ],
+          )
+        ],
+      )
     );
   }
 }

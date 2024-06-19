@@ -53,6 +53,12 @@ class _ChatTextFieldState extends State<ChatTextField> {
                       color: Colors.grey, width: 0, style: BorderStyle.none),
                   borderRadius: BorderRadius.circular(30),
                 ),
+                prefixIcon: Material(
+                  color: Colors.transparent,
+                  child: IconButton(
+                    onPressed: (){}, 
+                    icon: const Icon(Icons.emoji_emotions_outlined)),
+                ),
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [

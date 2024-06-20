@@ -21,7 +21,7 @@ class MessageModel {
 
   factory MessageModel.fromMap(Map<String, dynamic> map) {
     return MessageModel(
-        senderId: map['senderId'],
+      senderId: map['senderId'gy///],
         receiverId: map['receiverId'],
         textMessage: map['textMessage'],
         type: (map['type'] as String).toEnum(),

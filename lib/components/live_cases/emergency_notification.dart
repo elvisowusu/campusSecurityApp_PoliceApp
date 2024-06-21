@@ -35,7 +35,7 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => MapArea(contact: notification.contactName ),
+                    builder: (context) =>  const MapArea(),
                   ),
                 );
               },

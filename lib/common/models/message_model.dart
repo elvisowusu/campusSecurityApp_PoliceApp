@@ -21,13 +21,24 @@ class MessageModel {
 
   factory MessageModel.fromMap(Map<String, dynamic> map) {
     return MessageModel(
-        senderId: map['senderId'],
-        receiverId: map['receiverId'],
-        textMessage: map['textMessage'],
-        type: (map['type'] as String).toEnum(),
-        timeSent: DateTime.parse(map['timeSent']),
-        messageId: map['messageId'],
-        isSeen: map['isSeen'].toLowerCase() == 'true',
-      );
+      senderId: map['senderId'],
+      receiverId: map['receiverId'],
+      textMessage: map['textMessage'],
+      type: (map['type'] as String).toEnum(),
+      timeSent: DateTime.parse(map['timeSent']),
+      messageId: map['messageId'],
+      isSeen: map['isSeen'].toLowerCase() == 'true',
+    );
+  }
+
+  Map<String, dynamic> toMap() {
+    return {
+      "senderId": senderId,
+      "receiverId": receiverId,
+      "textMessage": textMessage,
+      "type": type.type,
+      "timeSent": timeSent.toIso8601String(),
+      "isSeen": isSeen,
+    };
   }
 }

@@ -1,16 +1,29 @@
+import 'package:cs_location_tracker_app/components/old_reports_cases/Controller/chat_controller.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class ChatTextField extends StatefulWidget {
+class ChatTextField extends ConsumerStatefulWidget {
   const ChatTextField({super.key, required this.receriverId});
   final String receriverId;
 
   @override
-  State<ChatTextField> createState() => _ChatTextFieldState();
+  ConsumerState<ChatTextField> createState() => _ChatTextFieldState();
 }
 
-class _ChatTextFieldState extends State<ChatTextField> {
+class _ChatTextFieldState extends ConsumerState<ChatTextField> {
   late TextEditingController messageController;
   bool isMessageIconEnabled = false;
+
+  // void sendTextMessage() async {
+  //   if (isMessageIconEnabled) {
+  //     ref.read(chatControllerProvider).sendTextMessage(
+  //         context: context,
+  //         textMessage: messageController.text,
+  //         receiverId: widget.receriverId);
+  //     messageController.clear();
+  //   }
+  // }
+
   @override
   void initState() {
     messageController = TextEditingController();
@@ -56,8 +69,8 @@ class _ChatTextFieldState extends State<ChatTextField> {
                 prefixIcon: Material(
                   color: Colors.transparent,
                   child: IconButton(
-                    onPressed: (){}, 
-                    icon: const Icon(Icons.emoji_emotions_outlined)),
+                      onPressed: () {},
+                      icon: const Icon(Icons.emoji_emotions_outlined)),
                 ),
                 suffixIcon: Row(
                   mainAxisSize: MainAxisSize.min,
@@ -79,8 +92,8 @@ class _ChatTextFieldState extends State<ChatTextField> {
           width: 5,
         ),
         IconButton(
-          onPressed: () {
-            // Send message to the receiver
+          onPressed:(){
+            // sendTextMessage();
           },
           icon: isMessageIconEnabled
               ? const Icon(Icons.send)

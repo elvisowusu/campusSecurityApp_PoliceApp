@@ -1,7 +1,4 @@
-import 'package:cs_location_tracker_app/components/old_reports_cases/call_page.dart';
-import 'package:cs_location_tracker_app/components/old_reports_cases/custom_chat_button.dart';
 import 'package:cs_location_tracker_app/components/old_reports_cases/notifications.dart';
-import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
 import 'package:flutter/material.dart';
 
 class ChatRoom extends StatefulWidget {
@@ -23,17 +20,7 @@ class _ChatRoomState extends State<ChatRoom> {
               style: TextStyle(letterSpacing: 1),
             ),
             elevation: 1,
-            actions: [
-              CustomIconButton(onTap: () {}, icon: Icons.search),
-              CustomIconButton(
-                  onTap: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (e) => const WelcomeScreen()));
-                  },
-                  icon: Icons.logout),
-            ],
+            backgroundColor: Colors.blue,
             bottom: const TabBar(
                 indicatorWeight: 2,
                 labelStyle: TextStyle(fontWeight: FontWeight.bold),
@@ -48,7 +35,6 @@ class _ChatRoomState extends State<ChatRoom> {
           body: const TabBarView(
             children: [
               MainChatPage(),
-              CallPage()
             ])
         ));
   }

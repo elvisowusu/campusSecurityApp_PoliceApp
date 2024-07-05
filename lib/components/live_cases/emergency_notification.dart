@@ -48,7 +48,8 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
                   context, MaterialPageRoute(builder: (e) => const ChatRoom()));
             },
             tooltip: 'Old Cases',
-            child: const Icon(Icons.chat_rounded)),
+            child: const Icon(Icons.chat_rounded)
+        ),
       ),
     );
   }

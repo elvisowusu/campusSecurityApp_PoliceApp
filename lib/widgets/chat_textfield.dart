@@ -1,4 +1,3 @@
-// import 'package:cs_location_tracker_app/components/old_reports_cases/Controller/chat_controller.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -14,15 +13,6 @@ class _ChatTextFieldState extends ConsumerState<ChatTextField> {
   late TextEditingController messageController;
   bool isMessageIconEnabled = false;
 
-  // void sendTextMessage() async {
-  //   if (isMessageIconEnabled) {
-  //     ref.read(chatControllerProvider).sendTextMessage(
-  //         context: context,
-  //         textMessage: messageController.text,
-  //         receiverId: widget.receriverId);
-  //     messageController.clear();
-  //   }
-  // }
 
   @override
   void initState() {

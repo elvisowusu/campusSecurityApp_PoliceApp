@@ -1,4 +1,4 @@
-import 'package:cs_location_tracker_app/widgets/chat_textfield.dart';
+
 import 'package:flutter/material.dart';
 
 class IndividualChatPage extends StatelessWidget {
@@ -26,7 +26,6 @@ class IndividualChatPage extends StatelessWidget {
                 child: Container(
                 ),
               ),
-              const ChatTextField(receriverId: '1')
             ],
           )
         ],

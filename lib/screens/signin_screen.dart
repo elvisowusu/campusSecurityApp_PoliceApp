@@ -275,10 +275,8 @@ class _SignInScreenState extends State<SignInScreen> {
       });
 
       if (user != null) {
+        
         showToast(message: 'Sign in successful!');
-        Navigator.push(
-            // ignore: use_build_context_synchronously
-            context, MaterialPageRoute(builder: (e) => const EmergencyNotifications()));
       } else {
         showToast(message: 'Sign in failed!');
       }

@@ -241,13 +241,53 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
+                      TextFormField(
+                        controller: _phoneNumberController,
+                        focusNode: _phoneNumberFocusNode,
+                        autovalidateMode: AutovalidateMode.onUserInteraction,
+                        inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Please enter Phone Number';
+                          } else if (value.length != 10) {
+                            return 'Invalid Phone Number';
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          label: const Text('Phone Number'),
+                          hintText: 'Enter Phone Number',
+                          hintStyle: const TextStyle(
+                            color: Colors.black26,
+                          ),
+                          errorText: _phoneNumberError,
+                          border: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderSide: const BorderSide(
+                              color: Colors.black12,
+                            ),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(
+                        height: 15.0,
+                      ),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           const Text(
-                            'Role: ',
+                            'Role*: ',
                             style: TextStyle(
-                              color: Colors.black45,
+                              color: Colors.red,
                             ),
                           ),
                           DropdownButton<String>(
@@ -272,48 +312,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ],
                       ),
-                      if (role == "Counsellor") ...[
-                        const SizedBox(
-                          height: 15.0,
-                        ),
-                        TextFormField(
-                          controller: _phoneNumberController,
-                          focusNode: _phoneNumberFocusNode,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                           inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(10),
-                        ],
-                          validator: (value) {
-                            if (value == null || value.isEmpty) {
-                              return 'Please enter Phone Number';
-                            } else if (value.length != 10) {
-                              return 'Invalid Phone Number';
-                            }
-                            return null;
-                          },
-                          decoration: InputDecoration(
-                            label: const Text('Phone Number'),
-                            hintText: 'Enter Phone Number',
-                            hintStyle: const TextStyle(
-                              color: Colors.black26,
-                            ),
-                            errorText: _phoneNumberError,
-                            border: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Colors.black12,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: const BorderSide(
-                                color: Colors.black12,
-                              ),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                          ),
-                        ),
-                      ],
                       Row(
                         children: [
                           Checkbox(
@@ -455,11 +453,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       String fullName = _fullNameController.text;
       String email = _emailController.text;
       String password = _passwordController.text;
-      String? phoneNumber;
-
-      if (role == 'Counsellor') {
-        phoneNumber = _phoneNumberController.text;
-      }
+      String phoneNumber = _phoneNumberController.text;
 
       User? user = await _auth.signUp(email, password);
       setState(() {
@@ -489,11 +483,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
             _emailController.text.isEmpty ? 'Please enter Email' : null;
         _passwordError =
             _passwordController.text.isEmpty ? 'Please enter Password' : null;
-        if (role == 'Counsellor') {
-          _phoneNumberError = _phoneNumberController.text.isEmpty
-              ? 'Please enter Phone Number'
-              : null;
-        }
+        _phoneNumberError = _phoneNumberController.text.isEmpty
+            ? 'Please enter Phone Number'
+            : null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

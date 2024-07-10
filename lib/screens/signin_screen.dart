@@ -36,6 +36,9 @@ class _SignInScreenState extends State<SignInScreen> {
   String? _emailError;
   String? _passwordError;
 
+  // Flag for password visibility
+  bool _showPassword = false;
+
   @override
   void initState() {
     super.initState();
@@ -142,7 +145,8 @@ class _SignInScreenState extends State<SignInScreen> {
                           TextFormField(
                             controller: _passwordController,
                             focusNode: _passwordFocusNode,
-                            obscureText: true,
+                            obscureText:
+                                !_showPassword, // Toggle visibility based on _showPassword flag
                             obscuringCharacter: '*',
                             autovalidateMode:
                                 AutovalidateMode.onUserInteraction,
@@ -153,22 +157,36 @@ class _SignInScreenState extends State<SignInScreen> {
                               return null;
                             },
                             decoration: InputDecoration(
-                                label: const Text('Password'),
-                                hintText: 'Enter Password',
-                                hintStyle: const TextStyle(
-                                  color: Colors.black26,
+                              label: const Text('Password'),
+                              hintText: 'Enter Password',
+                              hintStyle: const TextStyle(color: Colors.black26),
+                              errorText: _passwordError,
+                              border: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.black12,
                                 ),
-                                errorText: _passwordError,
-                                border: OutlineInputBorder(
-                                    borderSide:
-                                        const BorderSide(color: Colors.black12),
-                                    borderRadius: BorderRadius.circular(10)),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: const BorderSide(
-                                    color: Colors.black12,
-                                  ),
-                                  borderRadius: BorderRadius.circular(10),
-                                )),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: const BorderSide(
+                                  color: Colors.black12,
+                                ),
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              suffixIcon: IconButton(
+                                icon: Icon(
+                                  _showPassword
+                                      ? Icons.visibility
+                                      : Icons.visibility_off,
+                                  color: lightColorScheme.primary,
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _showPassword = !_showPassword;
+                                  });
+                                },
+                              ),
+                            ),
                           ),
                           const SizedBox(
                             height: 20,
@@ -262,62 +280,65 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _signIn() async {
-  if (_signInformKey.currentState!.validate()) {
-    setState(() {
-      _isSigningIn = true;
-    });
-
-    String email = _emailController.text;
-    String password = _passwordController.text;
-
-    try {
-      User? user = await _auth.signIn(email, password);
+    if (_signInformKey.currentState!.validate()) {
       setState(() {
-        _isSigningIn = false;
+        _isSigningIn = true;
       });
 
-      if (user != null) {
-        // Fetch user role from Firestore
-        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
-        final role = userDoc.data()?['role']; 
+      String email = _emailController.text;
+      String password = _passwordController.text;
 
-        if (role == 'Police Officer') {
-          showToast(message: 'Sign in successful!');
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (e) => const EmergencyNotifications()),
-          );
-        } else if (role == 'Counsellor') {
-          showToast(message: 'Sign in successful!');
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (e) => const MainChatPage()),
-          );
+      try {
+        User? user = await _auth.signIn(email, password);
+        setState(() {
+          _isSigningIn = false;
+        });
+
+        if (user != null) {
+          // Fetch user role from Firestore
+          final userDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .get();
+          final role = userDoc.data()?['role'];
+
+          if (role == 'Police Officer') {
+            showToast(message: 'Sign in successful!');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (e) => const EmergencyNotifications()),
+            );
+          } else if (role == 'Counsellor') {
+            showToast(message: 'Sign in successful!');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(builder: (e) => const MainChatPage()),
+            );
+          } else {
+            showToast(message: 'Unauthorized role or role not found.');
+          }
         } else {
-          showToast(message: 'Unauthorized role or role not found.');
+          showToast(message: 'Sign in failed!');
         }
-      } else {
-        showToast(message: 'Sign in failed!');
+      } on FirebaseAuthException catch (e) {
+        setState(() {
+          _isSigningIn = false;
+        });
+        showToast(message: e.message ?? 'An error occurred during sign in.');
       }
-    } on FirebaseAuthException catch (e) {
+    } else {
       setState(() {
-        _isSigningIn = false;
+        // Update error messages if form is not valid
+        _emailError =
+            _emailController.text.isEmpty ? 'Please enter Email' : null;
+        _passwordError =
+            _passwordController.text.isEmpty ? 'Please enter Password' : null;
       });
-      showToast(message: e.message ?? 'An error occurred during sign in.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please complete the form and agree to the terms.'),
+        ),
+      );
     }
-  } else {
-    setState(() {
-      // Update error messages if form is not valid
-      _emailError = _emailController.text.isEmpty ? 'Please enter Email' : null;
-      _passwordError = _passwordController.text.isEmpty ? 'Please enter Password' : null;
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Please complete the form and agree to the terms.'),
-      ),
-    );
   }
-}
-
-
 }

@@ -39,6 +39,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _passwordError;
   String? _phoneNumberError;
 
+  // Flag for password visibility
+  bool _showPassword = false;
+
   File? file;
   var options = [
     'Police Officer',
@@ -208,7 +211,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       TextFormField(
                         controller: _passwordController,
                         focusNode: _passwordFocusNode,
-                        obscureText: true,
+                        obscureText:
+                            !_showPassword, // Toggle visibility based on _showPassword flag
                         obscuringCharacter: '*',
                         autovalidateMode: AutovalidateMode.onUserInteraction,
                         validator: (value) {
@@ -220,9 +224,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         decoration: InputDecoration(
                           label: const Text('Password'),
                           hintText: 'Enter Password',
-                          hintStyle: const TextStyle(
-                            color: Colors.black26,
-                          ),
+                          hintStyle: const TextStyle(color: Colors.black26),
                           errorText: _passwordError,
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
@@ -235,6 +237,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               color: Colors.black12,
                             ),
                             borderRadius: BorderRadius.circular(10),
+                          ),
+                          suffixIcon: IconButton(
+                            icon: Icon(
+                              _showPassword
+                                  ? Icons.visibility
+                                  : Icons.visibility_off,
+                              color: lightColorScheme.primary,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                _showPassword = !_showPassword;
+                              });
+                            },
                           ),
                         ),
                       ),

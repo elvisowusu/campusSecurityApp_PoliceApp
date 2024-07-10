@@ -1,5 +1,7 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs_location_tracker_app/common/toast.dart';
 import 'package:cs_location_tracker_app/components/live_cases/emergency_notification.dart';
+import 'package:cs_location_tracker_app/components/old_reports_cases/notifications.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/forgot_password_screen.dart';
 import 'package:cs_location_tracker_app/screens/signup_screen.dart';
@@ -260,39 +262,62 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _signIn() async {
-    if (_signInformKey.currentState!.validate()) {
-      //loader
-      setState(() {
-        _isSigningIn = true;
-      });
+  if (_signInformKey.currentState!.validate()) {
+    setState(() {
+      _isSigningIn = true;
+    });
 
-      String email = _emailController.text;
-      String password = _passwordController.text;
+    String email = _emailController.text;
+    String password = _passwordController.text;
 
+    try {
       User? user = await _auth.signIn(email, password);
       setState(() {
         _isSigningIn = false;
       });
 
       if (user != null) {
-        
-        showToast(message: 'Sign in successful!');
+        // Fetch user role from Firestore
+        final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+        final role = userDoc.data()?['role']; 
+
+        if (role == 'Police Officer') {
+          showToast(message: 'Sign in successful!');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (e) => const EmergencyNotifications()),
+          );
+        } else if (role == 'Counsellor') {
+          showToast(message: 'Sign in successful!');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (e) => const MainChatPage()),
+          );
+        } else {
+          showToast(message: 'Unauthorized role or role not found.');
+        }
       } else {
         showToast(message: 'Sign in failed!');
       }
-    } else {
+    } on FirebaseAuthException catch (e) {
       setState(() {
-        // Update error messages if form is not valid
-        _emailError =
-            _emailController.text.isEmpty ? 'Please enter Email' : null;
-        _passwordError =
-            _passwordController.text.isEmpty ? 'Please enter Password' : null;
+        _isSigningIn = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Please complete the form and agree to the terms.')),
-      );
+      showToast(message: e.message ?? 'An error occurred during sign in.');
     }
+  } else {
+    setState(() {
+      // Update error messages if form is not valid
+      _emailError = _emailController.text.isEmpty ? 'Please enter Email' : null;
+      _passwordError = _passwordController.text.isEmpty ? 'Please enter Password' : null;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please complete the form and agree to the terms.'),
+      ),
+    );
   }
+}
+
 
 }

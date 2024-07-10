@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs_location_tracker_app/common/toast.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
@@ -7,6 +8,7 @@ import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -18,7 +20,6 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   final _signUpFormKey = GlobalKey<FormState>();
   bool agreePersonalData = true;
-  // Loader
   bool _isSigningUp = false;
 
   final FirebaseAuthService _auth = FirebaseAuthService();
@@ -26,16 +27,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _phoneNumberController = TextEditingController();
 
-  // Define FocusNodes
   final FocusNode _fullNameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
+  final FocusNode _phoneNumberFocusNode = FocusNode();
 
-  // Track error messages for fields
   String? _fullNameError;
   String? _emailError;
   String? _passwordError;
+  String? _phoneNumberError;
+
   File? file;
   var options = [
     'Police Officer',
@@ -48,7 +51,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   void initState() {
     super.initState();
 
-    // Add listeners to clear errors on focus
     _fullNameFocusNode.addListener(() {
       if (_fullNameFocusNode.hasFocus) {
         setState(() {
@@ -72,6 +74,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
         });
       }
     });
+
+    _phoneNumberFocusNode.addListener(() {
+      if (_phoneNumberFocusNode.hasFocus) {
+        setState(() {
+          _phoneNumberError = null;
+        });
+      }
+    });
   }
 
   @override
@@ -79,9 +89,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _fullNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
+    _phoneNumberController.dispose();
     _fullNameFocusNode.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
+    _phoneNumberFocusNode.dispose();
     super.dispose();
   }
 
@@ -109,13 +121,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
               child: SingleChildScrollView(
-                // Get started form
                 child: Form(
                   key: _signUpFormKey,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      // Get started text
                       Text(
                         'Get Started',
                         style: TextStyle(
@@ -127,7 +137,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 21.0,
                       ),
-                      // Full name
                       TextFormField(
                         controller: _fullNameController,
                         focusNode: _fullNameFocusNode,
@@ -147,13 +156,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           errorText: _fullNameError,
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12, // Default border color
+                              color: Colors.black12,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12, // Default border color
+                              color: Colors.black12,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -162,7 +171,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
-                      // Email
                       TextFormField(
                         controller: _emailController,
                         focusNode: _emailFocusNode,
@@ -182,13 +190,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           errorText: _emailError,
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12, // Default border color
+                              color: Colors.black12,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12, // Default border color
+                              color: Colors.black12,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -197,7 +205,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
-                      // Password
                       TextFormField(
                         controller: _passwordController,
                         focusNode: _passwordFocusNode,
@@ -219,13 +226,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           errorText: _passwordError,
                           border: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12, // Default border color
+                              color: Colors.black12,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
                           enabledBorder: OutlineInputBorder(
                             borderSide: const BorderSide(
-                              color: Colors.black12, // Default border color
+                              color: Colors.black12,
                             ),
                             borderRadius: BorderRadius.circular(10),
                           ),
@@ -234,7 +241,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
-                      // Role
                       Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -245,11 +251,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                           DropdownButton<String>(
-                            dropdownColor: const Color.fromARGB(255, 130, 156, 194),
-                              isDense: true,
-                              isExpanded: false,
-                              iconEnabledColor: Colors.white,
-                              focusColor: Colors.white,
+                            dropdownColor: const Color.fromARGB(255, 136, 162, 201),
+                            isDense: true,
+                            isExpanded: false,
+                            iconEnabledColor: Colors.white,
+                            focusColor: Colors.white,
                             items: options.map((String dropDownStringItem) {
                               return DropdownMenuItem<String>(
                                 value: dropDownStringItem,
@@ -266,35 +272,74 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           ),
                         ],
                       ),
-                      // I agree to the processing
+                      if (role == "Counsellor") ...[
+                        const SizedBox(
+                          height: 15.0,
+                        ),
+                        TextFormField(
+                          controller: _phoneNumberController,
+                          focusNode: _phoneNumberFocusNode,
+                          autovalidateMode: AutovalidateMode.onUserInteraction,
+                           inputFormatters: [
+                          FilteringTextInputFormatter.digitsOnly,
+                          LengthLimitingTextInputFormatter(10),
+                        ],
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter Phone Number';
+                            } else if (value.length != 10) {
+                              return 'Invalid Phone Number';
+                            }
+                            return null;
+                          },
+                          decoration: InputDecoration(
+                            label: const Text('Phone Number'),
+                            hintText: 'Enter Phone Number',
+                            hintStyle: const TextStyle(
+                              color: Colors.black26,
+                            ),
+                            errorText: _phoneNumberError,
+                            border: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.black12,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderSide: const BorderSide(
+                                color: Colors.black12,
+                              ),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        ),
+                      ],
                       Row(
                         children: [
                           Checkbox(
                             value: agreePersonalData,
-                            onChanged: (bool? value) {
+                            onChanged: (value) {
                               setState(() {
-                                agreePersonalData = value!;
+                                agreePersonalData = value ?? false;
                               });
                             },
-                            activeColor: lightColorScheme.primary,
                           ),
-                          const Text(
-                            'I agree to the processing of ',
-                            style: TextStyle(
-                              color: Colors.black45,
-                            ),
-                          ),
-                          Text(
-                            'Personal data',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: lightColorScheme.primary,
+                          Expanded(
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  agreePersonalData = !agreePersonalData;
+                                });
+                              },
+                              child: const Text(
+                                'I agree to the collection and processing of my personal data.',
+                              ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(
-                        height: 15.0,
+                        height: 20.0,
                       ),
                       // Signup button
                       SizedBox(
@@ -310,11 +355,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         ),
                       ),
                       const SizedBox(
-                        height: 15.0,
+                        height: 20.0,
                       ),
-                      // Sign up divider
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Expanded(
                             child: Divider(
@@ -412,6 +455,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       String fullName = _fullNameController.text;
       String email = _emailController.text;
       String password = _passwordController.text;
+      String? phoneNumber;
+
+      if (role == 'Counsellor') {
+        phoneNumber = _phoneNumberController.text;
+      }
 
       User? user = await _auth.signUp(email, password);
       setState(() {
@@ -423,6 +471,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'fullName': fullName,
           'email': email,
           'role': role,
+          'phoneNumber': phoneNumber,
           'createdAt': FieldValue.serverTimestamp(),
         });
         showToast(message: "Sign up successful");
@@ -434,9 +483,17 @@ class _SignUpScreenState extends State<SignUpScreen> {
     } else {
       setState(() {
         // Update error messages if form is not valid
-        _fullNameError = _fullNameController.text.isEmpty ? 'Please enter Full name' : null;
-        _emailError = _emailController.text.isEmpty ? 'Please enter Email' : null;
-        _passwordError = _passwordController.text.isEmpty ? 'Please enter Password' : null;
+        _fullNameError =
+            _fullNameController.text.isEmpty ? 'Please enter Full name' : null;
+        _emailError =
+            _emailController.text.isEmpty ? 'Please enter Email' : null;
+        _passwordError =
+            _passwordController.text.isEmpty ? 'Please enter Password' : null;
+        if (role == 'Counsellor') {
+          _phoneNumberError = _phoneNumberController.text.isEmpty
+              ? 'Please enter Phone Number'
+              : null;
+        }
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(

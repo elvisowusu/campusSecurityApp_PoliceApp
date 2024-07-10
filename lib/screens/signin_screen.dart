@@ -4,7 +4,7 @@ import 'package:cs_location_tracker_app/components/live_cases/emergency_notifica
 import 'package:cs_location_tracker_app/components/old_reports_cases/notifications.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/forgot_password_screen.dart';
-import 'package:cs_location_tracker_app/screens/signup_screen.dart';
+import 'package:cs_location_tracker_app/screens/personnel_type.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -22,6 +22,7 @@ class _SignInScreenState extends State<SignInScreen> {
   bool rememberPassword = true;
   //loader
   bool _isSigningIn = false;
+  bool _isSigningInWithGoogle = false;
 
   final FirebaseAuthService _auth = FirebaseAuthService();
 
@@ -229,19 +230,73 @@ class _SignInScreenState extends State<SignInScreen> {
                           const SizedBox(
                             height: 20,
                           ),
-                          SizedBox(
-                            width: double.infinity,
-                            child: ElevatedButton(
-                                onPressed: _signIn,
-                                //loading indicator
-                                child: _isSigningIn
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white,
-                                      )
-                                    : const Text('Sign In')),
+                          GestureDetector(
+                            onTap: _signIn,
+                            child: Container(
+                              width: double.infinity,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _isSigningIn
+                                        ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                        : const Text(
+                                            'Sign in',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                           const SizedBox(
                             height: 25,
+                          ),
+                          GestureDetector(
+                            onTap: _signInWithGoogle,
+                            child: Container(
+                              width: double.infinity,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _isSigningInWithGoogle
+                                        ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                        : const Icon(
+                                            Icons.g_mobiledata_outlined,
+                                            color: Colors.white,
+                                          ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    const Text(
+                                      "Sign in with Google",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
                           ),
                           const SizedBox(
                             height: 15,
@@ -259,7 +314,7 @@ class _SignInScreenState extends State<SignInScreen> {
                                       context,
                                       MaterialPageRoute(
                                           builder: (e) =>
-                                              const SignUpScreen()));
+                                              const RoleSelectionScreen()));
                                 },
                                 child: Text(
                                   'Sign up',
@@ -340,5 +395,12 @@ class _SignInScreenState extends State<SignInScreen> {
         ),
       );
     }
+  }
+
+  // Sign in with Google
+  void _signInWithGoogle() async {
+    setState(() {
+      _isSigningInWithGoogle = true;
+    });
   }
 }

@@ -1,4 +1,3 @@
-import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs_location_tracker_app/common/toast.dart';
@@ -9,9 +8,11 @@ import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SignUpScreen extends StatefulWidget {
-  const SignUpScreen({super.key});
+  final String role;
+  const SignUpScreen({super.key, required this.role});
 
   @override
   State<SignUpScreen> createState() => _SignUpScreenState();
@@ -19,8 +20,8 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _signUpFormKey = GlobalKey<FormState>();
-  bool agreePersonalData = true;
   bool _isSigningUp = false;
+  bool _isSigningUpWithGoogle = false;
 
   final FirebaseAuthService _auth = FirebaseAuthService();
 
@@ -41,14 +42,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // Flag for password visibility
   bool _showPassword = false;
-
-  File? file;
-  var options = [
-    'Police Officer',
-    'Counsellor',
-  ];
-  var _currentItemSelected = "Police Officer";
-  var role = "Police Officer";
 
   @override
   void initState() {
@@ -296,79 +289,60 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Role*: ',
-                            style: TextStyle(
-                              color: Colors.red,
-                            ),
-                          ),
-                          DropdownButton<String>(
-                            dropdownColor: Colors.white,
-                            isDense: true,
-                            isExpanded: false,
-                            iconEnabledColor: Colors.white,
-                            focusColor: Colors.white,
-                            items: options.map((String dropDownStringItem) {
-                              return DropdownMenuItem<String>(
-                                value: dropDownStringItem,
-                                child: Text(dropDownStringItem),
-                              );
-                            }).toList(),
-                            onChanged: (String? newValueSelected) {
-                              setState(() {
-                                _currentItemSelected = newValueSelected!;
-                                role = newValueSelected;
-                              });
-                            },
-                            value: _currentItemSelected,
-                          ),
-                        ],
-                      ),
+
                       Row(
                         children: [
-                          Checkbox(
-                            value: agreePersonalData,
-                            onChanged: (value) {
-                              setState(() {
-                                agreePersonalData = value ?? false;
-                              });
-                            },
+                          Icon(
+                            Icons.verified_user_outlined,
+                            color: lightColorScheme.primary,
+                            size: 20,
                           ),
+                          const SizedBox(width: 8.0),
                           Expanded(
-                            child: GestureDetector(
-                              onTap: () {
-                                setState(() {
-                                  agreePersonalData = !agreePersonalData;
-                                });
-                              },
-                              child: const Text(
-                                'I agree to the collection and processing of my personal data.',
+                            child: Text(
+                              'By creating account you have to agree with our Terms and Conditions.',
+                              style: TextStyle(
+                                color: lightColorScheme.primary,
                               ),
                             ),
                           ),
                         ],
                       ),
                       const SizedBox(
-                        height: 20.0,
+                        height: 15.0,
                       ),
                       // Signup button
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: _signUp,
-                          //loading indicator
-                          child: _isSigningUp
-                              ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                )
-                              : const Text('Sign up'),
+                      GestureDetector(
+                        onTap: _signUp,
+                        child: Container(
+                          width: double.infinity,
+                          height: 45,
+                          decoration: BoxDecoration(
+                            color: Colors.blue,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _isSigningUp
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                    : const Text(
+                                        'Sign up',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                       const SizedBox(
-                        height: 20.0,
+                        height: 5.0,
                       ),
                       Row(
                         children: [
@@ -384,7 +358,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               horizontal: 10,
                             ),
                             child: Text(
-                              'Sign up with',
+                              'Or',
                               style: TextStyle(
                                 color: Colors.black45,
                               ),
@@ -402,18 +376,41 @@ class _SignUpScreenState extends State<SignUpScreen> {
                         height: 5.0,
                       ),
                       // Sign up social media logo
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(
-                              Icons.g_mobiledata,
-                              size: 40,
-                              color: Color.fromARGB(255, 57, 232, 51),
+                      GestureDetector(
+                        onTap: _signUpWithGoogle,
+                        child: Container(
+                          width: double.infinity,
+                          height: 45,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Center(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _isSigningUpWithGoogle
+                                ? const CircularProgressIndicator(
+                                  color: Colors.white,
+                                ):
+                                const Icon(
+                                  FontAwesomeIcons.google,
+                                  color: Colors.white,
+                                ),
+                                const SizedBox(
+                                  width: 5,
+                                ),
+                                const Text(
+                                  "Sign up with Google",
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ],
+                        ),
                       ),
                       const SizedBox(
                         height: 15.0,
@@ -458,8 +455,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
+
   void _signUp() async {
-    if (_signUpFormKey.currentState!.validate() && agreePersonalData) {
+    if (_signUpFormKey.currentState!.validate()) {
       //loader
       setState(() {
         _isSigningUp = true;
@@ -479,7 +477,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
           'fullName': fullName,
           'email': email,
-          'role': role,
+          'role': widget.role,
           'phoneNumber': phoneNumber,
           'createdAt': FieldValue.serverTimestamp(),
         });
@@ -506,6 +504,39 @@ class _SignUpScreenState extends State<SignUpScreen> {
         const SnackBar(
             content: Text('Please complete the form and agree to the terms.')),
       );
+    }
+  }
+
+  // Sign up with Google
+  void _signUpWithGoogle() async {
+    FirebaseAuthService _auth = FirebaseAuthService();
+    User? user = await _auth.signInWithGoogle();
+    setState(() {
+      _isSigningUpWithGoogle = true;
+    });
+
+    if (user != null) {
+      // Check if user already exists in the database
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists) {
+        // Add user to the database
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'fullName': user.displayName,
+          'email': user.email,
+          'role': widget.role,
+          'phoneNumber': user.phoneNumber,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+      }
+      showToast(message: "Sign up successful");
+      Navigator.push(
+          context, MaterialPageRoute(builder: (e) => const SignInScreen()));
+    } else {
+      showToast(message: "Some error happened");
     }
   }
 }

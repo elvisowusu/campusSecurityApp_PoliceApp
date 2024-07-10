@@ -1,5 +1,5 @@
+import 'package:cs_location_tracker_app/screens/personnel_type.dart';
 import 'package:cs_location_tracker_app/screens/signin_screen.dart';
-import 'package:cs_location_tracker_app/screens/signup_screen.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_button.dart';
 import 'package:flutter/material.dart';
@@ -41,12 +41,12 @@ class WelcomeScreen extends StatelessWidget {
                     const Expanded(child: WelcomeButton(
                       buttonName: 'Sign In',
                       onTap: SignInScreen(),
-                      textColor: Colors.white,
-                      buttonColor: Colors.transparent,
+                      textColor: Colors.blue,
+                      buttonColor: Colors.white,
                     )),
                     Expanded(child: WelcomeButton(
                       buttonName: 'Sign Up',
-                      onTap:const SignUpScreen(),
+                      onTap:const RoleSelectionScreen(),
                       textColor: lightColorScheme.primary,
                       buttonColor: Colors.white,
                     ))

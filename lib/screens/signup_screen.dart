@@ -251,7 +251,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                           ),
                           DropdownButton<String>(
-                            dropdownColor: const Color.fromARGB(255, 136, 162, 201),
+                            dropdownColor: Colors.white,
                             isDense: true,
                             isExpanded: false,
                             iconEnabledColor: Colors.white,

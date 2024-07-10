@@ -1,3 +1,5 @@
+import 'dart:io';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs_location_tracker_app/common/toast.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/signin_screen.dart';
@@ -34,6 +36,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   String? _fullNameError;
   String? _emailError;
   String? _passwordError;
+  File? file;
+  var options = [
+    'Police Officer',
+    'Counsellor',
+  ];
+  var _currentItemSelected = "Police Officer";
+  var role = "Police Officer";
 
   @override
   void initState() {
@@ -225,6 +234,38 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       const SizedBox(
                         height: 15.0,
                       ),
+                      // Role
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            'Role: ',
+                            style: TextStyle(
+                              color: Colors.black45,
+                            ),
+                          ),
+                          DropdownButton<String>(
+                            dropdownColor: const Color.fromARGB(255, 130, 156, 194),
+                              isDense: true,
+                              isExpanded: false,
+                              iconEnabledColor: Colors.white,
+                              focusColor: Colors.white,
+                            items: options.map((String dropDownStringItem) {
+                              return DropdownMenuItem<String>(
+                                value: dropDownStringItem,
+                                child: Text(dropDownStringItem),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValueSelected) {
+                              setState(() {
+                                _currentItemSelected = newValueSelected!;
+                                role = newValueSelected;
+                              });
+                            },
+                            value: _currentItemSelected,
+                          ),
+                        ],
+                      ),
                       // I agree to the processing
                       Row(
                         children: [
@@ -368,6 +409,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         _isSigningUp = true;
       });
 
+      String fullName = _fullNameController.text;
       String email = _emailController.text;
       String password = _passwordController.text;
 
@@ -377,6 +419,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       if (user != null) {
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'fullName': fullName,
+          'email': email,
+          'role': role,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
         showToast(message: "Sign up successful");
         Navigator.push(
             context, MaterialPageRoute(builder: (e) => const SignInScreen()));

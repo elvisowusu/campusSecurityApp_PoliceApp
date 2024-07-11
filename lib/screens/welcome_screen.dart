@@ -1,9 +1,7 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:cs_location_tracker_app/screens/personnel_type.dart';
 import 'package:cs_location_tracker_app/screens/signin_screen.dart';
-import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_button.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 

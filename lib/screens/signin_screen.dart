@@ -367,7 +367,7 @@ class _SignInScreenState extends State<SignInScreen> {
             showToast(message: 'Sign in successful!');
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (e) => const MainChatPage()),
+              MaterialPageRoute(builder: (e) => MainChatPage()),
             );
           } else {
             showToast(message: 'Unauthorized role or role not found.');
@@ -434,7 +434,7 @@ void _signInWithGoogle() async {
       Navigator.pushReplacement(
         // ignore: use_build_context_synchronously
         context,
-        MaterialPageRoute(builder: (e) => const MainChatPage()),
+        MaterialPageRoute(builder: (e) => MainChatPage()),
       );
     } else {
       showToast(message: 'Unauthorized role or role not found.');

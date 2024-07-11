@@ -1,4 +1,3 @@
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs_location_tracker_app/common/toast.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
@@ -335,7 +334,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                           color: Colors.white,
                                           fontWeight: FontWeight.bold,
                                         ),
-                                ),
+                                      ),
                               ],
                             ),
                           ),
@@ -390,13 +389,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 _isSigningUpWithGoogle
-                                ? const CircularProgressIndicator(
-                                  color: Colors.white,
-                                ):
-                                const Icon(
-                                  FontAwesomeIcons.google,
-                                  color: Colors.white,
-                                ),
+                                    ? const CircularProgressIndicator(
+                                        color: Colors.white,
+                                      )
+                                    : const Icon(
+                                        FontAwesomeIcons.google,
+                                        color: Colors.white,
+                                      ),
                                 const SizedBox(
                                   width: 5,
                                 ),
@@ -455,17 +454,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
   }
 
-
   void _signUp() async {
     if (_signUpFormKey.currentState!.validate()) {
-       // Validate Ghanaian phone number format
-    final ghanaPhoneNumberRegex = RegExp(r'^[0][2-9][0-9]{8}$');
-    if (!ghanaPhoneNumberRegex.hasMatch(_phoneNumberController.text)) {
-      setState(() {
-        _phoneNumberError = 'Invalid Ghanaian Phone Number';
-      });
-      return;
-    }
+      // Validate Ghanaian phone number format
+      final ghanaPhoneNumberRegex = RegExp(r'^[0][2-9][0-9]{8}$');
+      if (!ghanaPhoneNumberRegex.hasMatch(_phoneNumberController.text)) {
+        setState(() {
+          _phoneNumberError = 'Invalid Ghanaian Phone Number';
+        });
+        return;
+      }
       //loader
       setState(() {
         _isSigningUp = true;
@@ -517,79 +515,81 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // Sign up with Google
   // Sign up with Google
-void _signUpWithGoogle() async {
-  // Validate phone number
-  if (_phoneNumberController.text.isEmpty) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Please enter Phone Number.'),
-      ),
-    );
-    return;
-  }
-
-  // Validate Ghanaian phone number format
-  final ghanaPhoneNumberRegex = RegExp(r'^[0][2-9][0-9]{8}$');
-  if (!ghanaPhoneNumberRegex.hasMatch(_phoneNumberController.text)) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Invalid Ghanaian Phone Number.'),
-      ),
-    );
-    return;
-  }
-
-  setState(() {
-    _isSigningUpWithGoogle = true;
-  });
-
-  try {
-    // Perform Google sign-in
-    User? user = await FirebaseAuthService().signInWithGoogle();
-
-    if (user != null) {
-      // Check if user already exists in the database
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-
-      if (userDoc.exists) {
-        // User already exists, handle accordingly (e.g., log in the user)
-        showToast(message: "Google account already exists!");
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (e) => const SignInScreen()),
-        );
-      } else {
-        // Add user to the database
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-          'fullName': user.displayName,
-          'email': user.email,
-          'role': widget.role,
-          'phoneNumber': _phoneNumberController.text,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-        showToast(message: "Sign up successful");
-        setState(() {
-          _isSigningUpWithGoogle = false;
-        });
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (e) => const SignInScreen()),
-        );
-      }
-    } else {
-      showToast(message: "Some error happened");
+  void _signUpWithGoogle() async {
+    // Validate phone number
+    if (_phoneNumberController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please enter Phone Number.'),
+        ),
+      );
+      return;
     }
-  } catch (e) {
-    print("Error signing up with Google: $e");
-    showToast(message: "Failed to sign up with Google.");
-  } finally {
-    setState(() {
-      _isSigningUpWithGoogle = false;
-    });
-  }
-}
 
+    // Validate Ghanaian phone number format
+    final ghanaPhoneNumberRegex = RegExp(r'^[0][2-9][0-9]{8}$');
+    if (!ghanaPhoneNumberRegex.hasMatch(_phoneNumberController.text)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Invalid Ghanaian Phone Number.'),
+        ),
+      );
+      return;
+    }
+
+    setState(() {
+      _isSigningUpWithGoogle = true;
+    });
+
+    try {
+      // Perform Google sign-in
+      User? user = await FirebaseAuthService().signInWithGoogle();
+
+      if (user != null) {
+        // Check if user already exists in the database
+        DocumentSnapshot userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(user.uid)
+            .get();
+
+        if (userDoc.exists) {
+          // User already exists, handle accordingly (e.g., log in the user)
+          showToast(message: "Google account already exists!");
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (e) => const SignInScreen()),
+          );
+        } else {
+          // Add user to the database
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(user.uid)
+              .set({
+            'fullName': user.displayName,
+            'email': user.email,
+            'role': widget.role,
+            'phoneNumber': _phoneNumberController.text,
+            'createdAt': FieldValue.serverTimestamp(),
+          });
+          showToast(message: "Sign up successful");
+          setState(() {
+            _isSigningUpWithGoogle = false;
+          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (e) => const SignInScreen()),
+          );
+        }
+      } else {
+        showToast(message: "Some error happened");
+      }
+    } catch (e) {
+      showToast(message: "Error signing up with Google: $e");
+      showToast(message: "Failed to sign up with Google.");
+    } finally {
+      setState(() {
+        _isSigningUpWithGoogle = false;
+      });
+    }
+  }
 }

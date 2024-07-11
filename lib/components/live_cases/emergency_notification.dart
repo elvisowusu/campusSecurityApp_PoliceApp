@@ -1,5 +1,4 @@
 import 'package:cs_location_tracker_app/components/live_cases/map_area.dart';
-import 'package:cs_location_tracker_app/components/old_reports_cases/chat_room.dart';
 import 'package:flutter/material.dart';
 
 class EmergencyNotifications extends StatefulWidget {
@@ -41,14 +40,6 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
               },
             );
           },
-        ),
-        floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              Navigator.push(
-                  context, MaterialPageRoute(builder: (e) => const ChatRoom()));
-            },
-            tooltip: 'Old Cases',
-            child: const Icon(Icons.chat_rounded)
         ),
       ),
     );

@@ -516,7 +516,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   // Sign up with Google
-  void _signUpWithGoogle() async {
+  // Sign up with Google
+void _signUpWithGoogle() async {
+  // Validate phone number
   if (_phoneNumberController.text.isEmpty) {
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
@@ -536,46 +538,58 @@ class _SignUpScreenState extends State<SignUpScreen> {
     );
     return;
   }
-//Proceed with sign up process
-  FirebaseAuthService _auth = FirebaseAuthService();
+
   setState(() {
     _isSigningUpWithGoogle = true;
   });
 
-  User? user = await _auth.signInWithGoogle();
+  try {
+    // Perform Google sign-in
+    User? user = await FirebaseAuthService().signInWithGoogle();
 
-  if (user != null) {
-    // Check if user already exists in the database
-    DocumentSnapshot userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
+    if (user != null) {
+      // Check if user already exists in the database
+      DocumentSnapshot userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
 
-    if (userDoc.exists) {
-      // User already exists, handle accordingly (e.g., log in the user)
-      showToast(message: "Google account already exists!");
-      Navigator.push(
-          context, MaterialPageRoute(builder: (e) => const SignInScreen()));
+      if (userDoc.exists) {
+        // User already exists, handle accordingly (e.g., log in the user)
+        showToast(message: "Google account already exists!");
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (e) => const SignInScreen()),
+        );
+      } else {
+        // Add user to the database
+        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+          'fullName': user.displayName,
+          'email': user.email,
+          'role': widget.role,
+          'phoneNumber': _phoneNumberController.text,
+          'createdAt': FieldValue.serverTimestamp(),
+        });
+        showToast(message: "Sign up successful");
+        setState(() {
+          _isSigningUpWithGoogle = false;
+        });
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (e) => const SignInScreen()),
+        );
+      }
     } else {
-      // Add user to the database
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-        'fullName': user.displayName,
-        'email': user.email,
-        'role': widget.role,
-        'phoneNumber': _phoneNumberController.text,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
-      showToast(message: "Sign up successful");
-      setState(() {
-        _isSigningUpWithGoogle = false;
-      });
-      Navigator.push(
-          context, MaterialPageRoute(builder: (e) => const SignInScreen()));
+      showToast(message: "Some error happened");
     }
-  } else {
-    showToast(message: "Some error happened");
+  } catch (e) {
+    print("Error signing up with Google: $e");
+    showToast(message: "Failed to sign up with Google.");
+  } finally {
+    setState(() {
+      _isSigningUpWithGoogle = false;
+    });
   }
 }
-
 
 }

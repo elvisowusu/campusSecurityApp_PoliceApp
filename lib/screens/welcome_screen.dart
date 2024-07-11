@@ -46,20 +46,20 @@ class WelcomeScreen extends StatelessWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.end,
                   children: [
-                    const Expanded(
+                     Expanded(
                       child: WelcomeButton(
                         buttonName: 'Sign In',
-                        onTap: SignInScreen(),
-                        textColor: Colors.blue,
-                        buttonColor: Colors.white,
+                        onTap: const SignInScreen(),
+                        textColor: Colors.white,
+                        buttonColor: const Color.fromARGB(255, 6, 6, 6).withOpacity(0.7),
                       ),
                     ),
                     Expanded(
                       child: WelcomeButton(
                         buttonName: 'Sign Up',
                         onTap: const RoleSelectionScreen(),
-                        textColor: lightColorScheme.primary,
-                        buttonColor: Colors.white,
+                        textColor: Colors.white,
+                        buttonColor: const Color.fromARGB(255, 6, 6, 6).withOpacity(0.7),
                       ),
                     ),
                   ],

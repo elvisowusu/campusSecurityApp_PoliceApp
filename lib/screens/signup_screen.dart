@@ -458,6 +458,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _signUp() async {
     if (_signUpFormKey.currentState!.validate()) {
+       // Validate Ghanaian phone number format
+    final ghanaPhoneNumberRegex = RegExp(r'^[0][2-9][0-9]{8}$');
+    if (!ghanaPhoneNumberRegex.hasMatch(_phoneNumberController.text)) {
+      setState(() {
+        _phoneNumberError = 'Invalid Ghanaian Phone Number';
+      });
+      return;
+    }
       //loader
       setState(() {
         _isSigningUp = true;
@@ -509,34 +517,65 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // Sign up with Google
   void _signUpWithGoogle() async {
-    FirebaseAuthService _auth = FirebaseAuthService();
-    User? user = await _auth.signInWithGoogle();
-    setState(() {
-      _isSigningUpWithGoogle = true;
-    });
+  if (_phoneNumberController.text.isEmpty) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please enter Phone Number.'),
+      ),
+    );
+    return;
+  }
 
-    if (user != null) {
-      // Check if user already exists in the database
-      DocumentSnapshot userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
+  // Validate Ghanaian phone number format
+  final ghanaPhoneNumberRegex = RegExp(r'^[0][2-9][0-9]{8}$');
+  if (!ghanaPhoneNumberRegex.hasMatch(_phoneNumberController.text)) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Invalid Ghanaian Phone Number.'),
+      ),
+    );
+    return;
+  }
+//Proceed with sign up process
+  FirebaseAuthService _auth = FirebaseAuthService();
+  setState(() {
+    _isSigningUpWithGoogle = true;
+  });
 
-      if (!userDoc.exists) {
-        // Add user to the database
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
-          'fullName': user.displayName,
-          'email': user.email,
-          'role': widget.role,
-          'phoneNumber': user.phoneNumber,
-          'createdAt': FieldValue.serverTimestamp(),
-        });
-      }
-      showToast(message: "Sign up successful");
+  User? user = await _auth.signInWithGoogle();
+
+  if (user != null) {
+    // Check if user already exists in the database
+    DocumentSnapshot userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+
+    if (userDoc.exists) {
+      // User already exists, handle accordingly (e.g., log in the user)
+      showToast(message: "Google account already exists!");
       Navigator.push(
           context, MaterialPageRoute(builder: (e) => const SignInScreen()));
     } else {
-      showToast(message: "Some error happened");
+      // Add user to the database
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        'fullName': user.displayName,
+        'email': user.email,
+        'role': widget.role,
+        'phoneNumber': _phoneNumberController.text,
+        'createdAt': FieldValue.serverTimestamp(),
+      });
+      showToast(message: "Sign up successful");
+      setState(() {
+        _isSigningUpWithGoogle = false;
+      });
+      Navigator.push(
+          context, MaterialPageRoute(builder: (e) => const SignInScreen()));
     }
+  } else {
+    showToast(message: "Some error happened");
   }
+}
+
+
 }

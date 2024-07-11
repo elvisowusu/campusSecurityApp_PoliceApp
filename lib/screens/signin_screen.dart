@@ -398,9 +398,50 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   // Sign in with Google
-  void _signInWithGoogle() async {
-    setState(() {
-      _isSigningInWithGoogle = true;
-    });
+  // Sign in with Google
+void _signInWithGoogle() async {
+  // ignore: no_leading_underscores_for_local_identifiers
+  FirebaseAuthService _authService = FirebaseAuthService();
+
+  setState(() {
+    _isSigningInWithGoogle = true;
+  });
+
+  User? user = await _authService.signInWithGoogle();
+
+  setState(() {
+    _isSigningInWithGoogle = false;
+  });
+
+  if (user != null) {
+    // Fetch user role from Firestore
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+    final role = userDoc.data()?['role'];
+
+    // Navigate based on user role
+    if (role == 'Police Officer') {
+      showToast(message: 'Sign in successful!');
+      Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(builder: (e) => const EmergencyNotifications()),
+      );
+    } else if (role == 'Counsellor') {
+      showToast(message: 'Sign in successful!');
+      Navigator.pushReplacement(
+        // ignore: use_build_context_synchronously
+        context,
+        MaterialPageRoute(builder: (e) => const MainChatPage()),
+      );
+    } else {
+      showToast(message: 'Unauthorized role or role not found.');
+    }
+  } else {
+    showToast(message: 'Sign in with Google failed or cancelled.');
   }
+}
+
 }

@@ -16,7 +16,10 @@ class MainChatPage extends StatelessWidget {
         title: const Text('Chats'),
       ),
       body: StreamBuilder<QuerySnapshot>(
-        stream: _firestore.collection('users').doc(currentUser!.uid).collection('students').snapshots(),
+        stream: _firestore
+            .collection('chats')
+            .where('participants', arrayContains: currentUser!.uid)
+            .snapshots(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (!snapshot.hasData) {
             return const Center(
@@ -27,10 +30,28 @@ class MainChatPage extends StatelessWidget {
           return ListView(
             children: snapshot.data!.docs.map((document) {
               Map<String, dynamic> data = document.data() as Map<String, dynamic>;
-              String studentId = data['studentId'];
+              String chatId = document.id;
+              List participants = data['participants'];
+              String studentId = participants.firstWhere((id) => id != currentUser!.uid);
 
               return ListTile(
-                title: Text(studentId),
+                title: Text('Chat with $studentId'),
+                subtitle: StreamBuilder<QuerySnapshot>(
+                  stream: _firestore
+                      .collection('chats')
+                      .doc(chatId)
+                      .collection('messages')
+                      .orderBy('timestamp', descending: true)
+                      .limit(1)
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const Text('No messages yet');
+                    }
+                    var lastMessage = snapshot.data!.docs.first.data() as Map<String, dynamic>;
+                    return Text(lastMessage['text']);
+                  },
+                ),
                 onTap: () {
                   Navigator.push(
                     context,

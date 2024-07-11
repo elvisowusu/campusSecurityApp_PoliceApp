@@ -244,7 +244,7 @@ class _SignInScreenState extends State<SignInScreen> {
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                _isSigningUp
+                                _isSigningIn
                                     ? const CircularProgressIndicator(
                                         color: Colors.white,
                                       )

@@ -1,17 +1,14 @@
 import 'package:cs_location_tracker_app/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 
 class RoleSelectionScreen extends StatelessWidget {
   const RoleSelectionScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Select Role'),
-      ),
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+    return CustomScaffold(
+      customContainer: Column(
         children: [
           const Text('Choose your Role'),
           GestureDetector(
@@ -20,15 +17,39 @@ class RoleSelectionScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const SignUpScreen(role: 'Police Officer'),
+                  builder: (context) =>
+                      const SignUpScreen(role: 'Police Officer'),
                 ),
               );
             },
             child: Container(
-              padding: const EdgeInsets.all(10),
-              color: Colors.blue,
-              child: const Text('Police Officer'),
+              width: double.infinity,
+              height: 45,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "Police Officer",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
+          ),
+          const SizedBox(
+            height: 5.0,
           ),
           GestureDetector(
             onTap: () {
@@ -41,9 +62,29 @@ class RoleSelectionScreen extends StatelessWidget {
               );
             },
             child: Container(
-              padding: const EdgeInsets.all(10),
-              color: Colors.blue,
-              child: const Text('Counsellor'),
+              width: double.infinity,
+              height: 45,
+              decoration: BoxDecoration(
+                color: Colors.blue,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: const Center(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: 5,
+                    ),
+                    Text(
+                      "Counsellor ",
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ),
           ),
         ],

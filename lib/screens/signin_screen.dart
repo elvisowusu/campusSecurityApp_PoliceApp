@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs_location_tracker_app/common/toast.dart';
 import 'package:cs_location_tracker_app/components/live_cases/emergency_notification.dart';
-import 'package:cs_location_tracker_app/components/old_reports_cases/notifications.dart';
+import 'package:cs_location_tracker_app/components/Counselor/notification.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/forgot_password_screen.dart';
 import 'package:cs_location_tracker_app/screens/personnel_type.dart';
@@ -467,7 +467,7 @@ void _signInWithGoogle() async {
       Navigator.pushReplacement(
         // ignore: use_build_context_synchronously
         context,
-        MaterialPageRoute(builder: (e) => MainChatPage()),
+        MaterialPageRoute(builder: (e) => CounselorNotificationsPage()),
       );
     } else {
       showToast(message: 'Unauthorized role or role not found.');

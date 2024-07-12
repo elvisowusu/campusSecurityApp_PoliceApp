@@ -13,7 +13,7 @@ class WelcomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      image: 'assets/images/WelcomePhoto.avif',
+      image: 'assets/images/security.avif',
       customContainer: Stack(
         children: [
           // Background image with blur effect

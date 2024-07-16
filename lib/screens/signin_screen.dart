@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:cs_location_tracker_app/common/toast.dart';
+import 'package:cs_location_tracker_app/components/Counselor/notifications.dart';
 import 'package:cs_location_tracker_app/components/live_cases/emergency_notification.dart';
-import 'package:cs_location_tracker_app/components/old_reports_cases/notifications.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/forgot_password_screen.dart';
 import 'package:cs_location_tracker_app/screens/personnel_type.dart';
@@ -230,107 +230,107 @@ class _SignInScreenState extends State<SignInScreen> {
                           ),
                           const SizedBox(
                             height: 20,
-                          ),// Signup button
-                      GestureDetector(
-                        onTap: _signIn,
-                        child: Container(
-                          width: double.infinity,
-                          height: 45,
-                          decoration: BoxDecoration(
-                            color: Colors.blue,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _isSigningIn
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white,
-                                      )
-                                    : const Text(
-                                        'Sign in',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 5.0,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Divider(
-                              thickness: 0.7,
-                              color: Colors.grey.withOpacity(0.5),
-                            ),
-                          ),
-                          const Padding(
-                            padding: EdgeInsets.symmetric(
-                              vertical: 0,
-                              horizontal: 10,
-                            ),
-                            child: Text(
-                              'Or',
-                              style: TextStyle(
-                                color: Colors.black45,
+                          ), // Signup button
+                          GestureDetector(
+                            onTap: _signIn,
+                            child: Container(
+                              width: double.infinity,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                color: Colors.blue,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _isSigningIn
+                                        ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                        : const Text(
+                                            'Sign in',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                  ],
+                                ),
                               ),
                             ),
                           ),
-                          Expanded(
-                            child: Divider(
-                              thickness: 0.7,
-                              color: Colors.grey.withOpacity(0.5),
-                            ),
+                          const SizedBox(
+                            height: 5.0,
                           ),
-                        ],
-                      ),
-                      const SizedBox(
-                        height: 5.0,
-                      ),
-                      // Sign in with Google
-                      GestureDetector(
-                        onTap: _signInWithGoogle,
-                        child: Container(
-                          width: double.infinity,
-                          height: 45,
-                          decoration: BoxDecoration(
-                            color: Colors.red,
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Center(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                _isSigningInWithGoogle
-                                    ? const CircularProgressIndicator(
-                                        color: Colors.white,
-                                      )
-                                    : const Icon(
-                                        FontAwesomeIcons.google,
-                                        color: Colors.white,
-                                      ),
-                                const SizedBox(
-                                  width: 5,
+                          Row(
+                            children: [
+                              Expanded(
+                                child: Divider(
+                                  thickness: 0.7,
+                                  color: Colors.grey.withOpacity(0.5),
                                 ),
-                                const Text(
-                                  "Sign in with Google",
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.symmetric(
+                                  vertical: 0,
+                                  horizontal: 10,
+                                ),
+                                child: Text(
+                                  'Or',
                                   style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black45,
                                   ),
                                 ),
-                              ],
+                              ),
+                              Expanded(
+                                child: Divider(
+                                  thickness: 0.7,
+                                  color: Colors.grey.withOpacity(0.5),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(
+                            height: 5.0,
+                          ),
+                          // Sign in with Google
+                          GestureDetector(
+                            onTap: _signInWithGoogle,
+                            child: Container(
+                              width: double.infinity,
+                              height: 45,
+                              decoration: BoxDecoration(
+                                color: Colors.red,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Center(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    _isSigningInWithGoogle
+                                        ? const CircularProgressIndicator(
+                                            color: Colors.white,
+                                          )
+                                        : const Icon(
+                                            FontAwesomeIcons.google,
+                                            color: Colors.white,
+                                          ),
+                                    const SizedBox(
+                                      width: 5,
+                                    ),
+                                    const Text(
+                                      "Sign in with Google",
+                                      style: TextStyle(
+                                        color: Colors.white,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
                           ),
-                        ),
-                      ),
                           const SizedBox(
                             height: 15,
                           ),
@@ -400,7 +400,8 @@ class _SignInScreenState extends State<SignInScreen> {
             showToast(message: 'Sign in successful!');
             Navigator.pushReplacement(
               context,
-              MaterialPageRoute(builder: (e) => MainChatPage()),
+              MaterialPageRoute(
+                  builder: (e) => CounselorNotificationsPage()),
             );
           } else {
             showToast(message: 'Unauthorized role or role not found.');
@@ -432,49 +433,48 @@ class _SignInScreenState extends State<SignInScreen> {
 
   // Sign in with Google
   // Sign in with Google
-void _signInWithGoogle() async {
-  // ignore: no_leading_underscores_for_local_identifiers
-  FirebaseAuthService _authService = FirebaseAuthService();
+  void _signInWithGoogle() async {
+    // ignore: no_leading_underscores_for_local_identifiers
+    FirebaseAuthService _authService = FirebaseAuthService();
 
-  setState(() {
-    _isSigningInWithGoogle = true;
-  });
+    setState(() {
+      _isSigningInWithGoogle = true;
+    });
 
-  User? user = await _authService.signInWithGoogle();
+    User? user = await _authService.signInWithGoogle();
 
-  setState(() {
-    _isSigningInWithGoogle = false;
-  });
+    setState(() {
+      _isSigningInWithGoogle = false;
+    });
 
-  if (user != null) {
-    // Fetch user role from Firestore
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
-    final role = userDoc.data()?['role'];
+    if (user != null) {
+      // Fetch user role from Firestore
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+      final role = userDoc.data()?['role'];
 
-    // Navigate based on user role
-    if (role == 'Police Officer') {
-      showToast(message: 'Sign in successful!');
-      Navigator.pushReplacement(
-        // ignore: use_build_context_synchronously
-        context,
-        MaterialPageRoute(builder: (e) => const EmergencyNotifications()),
-      );
-    } else if (role == 'Counsellor') {
-      showToast(message: 'Sign in successful!');
-      Navigator.pushReplacement(
-        // ignore: use_build_context_synchronously
-        context,
-        MaterialPageRoute(builder: (e) => MainChatPage()),
-      );
+      // Navigate based on user role
+      if (role == 'Police Officer') {
+        showToast(message: 'Sign in successful!');
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(builder: (e) => const EmergencyNotifications()),
+        );
+      } else if (role == 'Counsellor') {
+        showToast(message: 'Sign in successful!');
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          MaterialPageRoute(builder: (e) => CounselorNotificationsPage()),
+        );
+      } else {
+        showToast(message: 'Unauthorized role or role not found.');
+      }
     } else {
-      showToast(message: 'Unauthorized role or role not found.');
+      showToast(message: 'Sign in with Google failed or cancelled.');
     }
-  } else {
-    showToast(message: 'Sign in with Google failed or cancelled.');
   }
-}
-
 }

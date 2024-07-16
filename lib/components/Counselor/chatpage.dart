@@ -3,15 +3,17 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
 class CounselorStudentPrivateChatPage extends StatefulWidget {
-  final String studentId;
-
   const CounselorStudentPrivateChatPage({super.key, required this.studentId});
 
+  final String studentId;
+
   @override
-  State<CounselorStudentPrivateChatPage> createState() => _CounselorStudentPrivateChatPageState();
+  State<CounselorStudentPrivateChatPage> createState() =>
+      _CounselorStudentPrivateChatPageState();
 }
 
-class _CounselorStudentPrivateChatPageState extends State<CounselorStudentPrivateChatPage> {
+class _CounselorStudentPrivateChatPageState
+    extends State<CounselorStudentPrivateChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? currentUser = FirebaseAuth.instance.currentUser;
@@ -23,6 +25,7 @@ class _CounselorStudentPrivateChatPageState extends State<CounselorStudentPrivat
         'senderId': currentUser!.uid,
         'receiverId': widget.studentId,
         'timestamp': FieldValue.serverTimestamp(),
+        'participants': [currentUser!.uid, widget.studentId],
       });
 
       _messageController.clear();
@@ -41,8 +44,7 @@ class _CounselorStudentPrivateChatPageState extends State<CounselorStudentPrivat
             child: StreamBuilder<QuerySnapshot>(
               stream: _firestore
                   .collection('chats')
-                  .where('senderId', whereIn: [currentUser!.uid, widget.studentId])
-                  .where('receiverId', whereIn: [currentUser!.uid, widget.studentId])
+                  .where('participants', arrayContains: currentUser!.uid)
                   .orderBy('timestamp', descending: true)
                   .snapshots(),
               builder: (context, snapshot) {
@@ -52,7 +54,13 @@ class _CounselorStudentPrivateChatPageState extends State<CounselorStudentPrivat
                   );
                 }
 
-                var messages = snapshot.data!.docs;
+                var messages = snapshot.data!.docs.where((doc) {
+                  var data = doc.data() as Map<String, dynamic>;
+                  return (data['senderId'] == currentUser!.uid &&
+                          data['receiverId'] == widget.studentId) ||
+                      (data['senderId'] == widget.studentId &&
+                          data['receiverId'] == currentUser!.uid);
+                }).toList();
 
                 return ListView.builder(
                   reverse: true,

@@ -514,7 +514,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   }
 
   // Sign up with Google
-  // Sign up with Google
   void _signUpWithGoogle() async {
     // Validate phone number
     if (_phoneNumberController.text.isEmpty) {

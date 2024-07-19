@@ -1,3 +1,4 @@
+import 'package:cs_location_tracker_app/components/Counselor/messageEnum.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -17,19 +18,37 @@ class _CounselorStudentPrivateChatPageState
   final TextEditingController _messageController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? currentUser = FirebaseAuth.instance.currentUser;
+  late User? _currentUser;
+  late CollectionReference _messagesCollection;
+  @override
+  void initState() {
+    super.initState();
+    _currentUser = FirebaseAuth.instance.currentUser;
+    _messagesCollection = _firestore
+        .collection('users')
+        .doc(_currentUser!.uid)
+        .collection('chats')
+        .doc(widget.studentId)
+        .collection('messages');
+  }
 
-  void _sendMessage() async {
-    if (_messageController.text.isNotEmpty) {
-      await _firestore.collection('chats').add({
-        'text': _messageController.text,
-        'senderId': currentUser!.uid,
-        'receiverId': widget.studentId,
-        'timestamp': FieldValue.serverTimestamp(),
-        'participants': [currentUser!.uid, widget.studentId],
-      });
+  void _sendMessage(String content) async {
+    if (content.trim().isEmpty) return;
 
-      _messageController.clear();
-    }
+    final userChatsCollection = _firestore
+        .collection('users')
+        .doc(_currentUser!.uid)
+        .collection('chats');
+
+    await _messagesCollection.add({
+      'senderId': currentUser!.uid,
+      'content': content,
+      'timestamp': Timestamp.now(),
+      'type': 'text',
+      'participants': [currentUser!.uid, widget.studentId],
+    });
+
+    _messageController.clear();
   }
 
   @override
@@ -42,55 +61,70 @@ class _CounselorStudentPrivateChatPageState
         children: [
           Expanded(
             child: StreamBuilder<QuerySnapshot>(
-              stream: _firestore
-                  .collection('chats')
-                  .where('participants', arrayContains: currentUser!.uid)
-                  .orderBy('timestamp', descending: true)
-                  .snapshots(),
-              builder: (context, snapshot) {
+              stream: _messagesCollection.orderBy('timestamp').snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
                 if (!snapshot.hasData) {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
                 }
 
-                var messages = snapshot.data!.docs.where((doc) {
-                  var data = doc.data() as Map<String, dynamic>;
-                  return (data['senderId'] == currentUser!.uid &&
-                          data['receiverId'] == widget.studentId) ||
-                      (data['senderId'] == widget.studentId &&
-                          data['receiverId'] == currentUser!.uid);
-                }).toList();
+                List<DocumentSnapshot> messages = snapshot.data!.docs;
 
-                return ListView.builder(
-                  reverse: true,
-                  itemCount: messages.length,
-                  itemBuilder: (context, index) {
-                    var message = messages[index];
-                    var messageText = message['text'];
-                    var messageSenderId = message['senderId'];
+                return ListView(
+                  padding: const EdgeInsets.all(8.0),
+                  children: messages.map((DocumentSnapshot document) {
+                    Map<String, dynamic> data =
+                        document.data() as Map<String, dynamic>;
+                    String message = data['content'];
+                    String senderId = data['senderId'];
+                    MessageType messageType = (data['type'] as String).toEnum();
+                    bool isMe = senderId == _currentUser!.uid;
 
-                    return ListTile(
-                      title: Align(
-                        alignment: messageSenderId == currentUser!.uid
-                            ? Alignment.centerRight
-                            : Alignment.centerLeft,
-                        child: Container(
-                          padding: const EdgeInsets.all(10.0),
-                          decoration: BoxDecoration(
-                            color: messageSenderId == currentUser!.uid
-                                ? Colors.blue
-                                : Colors.grey,
-                            borderRadius: BorderRadius.circular(10.0),
+                    Widget messageWidget;
+                    switch (messageType) {
+                      case MessageType.text:
+                        messageWidget = Text(message);
+                        break;
+                      case MessageType.image:
+                        messageWidget = Text('Image: $message');
+                        break;
+                      case MessageType.audio:
+                        messageWidget = Text('Audio: $message');
+                        break;
+                      case MessageType.video:
+                        messageWidget = Text('Video: $message');
+                        break;
+                      case MessageType.gif:
+                        messageWidget = Text('GIF: $message');
+                        break;
+                      default:
+                        messageWidget = Text(message);
+                        break;
+                    }
+
+                    return Container(
+                      margin: const EdgeInsets.symmetric(vertical: 10.0),
+                      child: Row(
+                        mainAxisAlignment: isMe
+                            ? MainAxisAlignment.end
+                            : MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15.0, vertical: 10.0),
+                            decoration: BoxDecoration(
+                              color:
+                                  isMe ? Colors.blueAccent : Colors.grey[300],
+                              borderRadius: BorderRadius.circular(20.0),
+                            ),
+                            child: messageWidget,
                           ),
-                          child: Text(
-                            messageText,
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
+                        ],
                       ),
                     );
-                  },
+                  }).toList(),
                 );
               },
             ),
@@ -110,9 +144,10 @@ class _CounselorStudentPrivateChatPageState
                 ),
                 const SizedBox(width: 8.0),
                 IconButton(
-                  icon: const Icon(Icons.send),
-                  onPressed: _sendMessage,
-                ),
+                    icon: const Icon(Icons.send),
+                    onPressed: () {
+                      _sendMessage(_messageController.text);
+                    }),
               ],
             ),
           ),

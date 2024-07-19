@@ -1,7 +1,7 @@
-import 'package:cs_location_tracker_app/components/Counselor/chatpage.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'chatpage.dart';
 
 class CounselorNotificationsPage extends StatelessWidget {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -17,7 +17,7 @@ class CounselorNotificationsPage extends StatelessWidget {
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
-            .collection('chats')
+            .collectionGroup('messages')
             .where('participants', arrayContains: currentUser!.uid)
             .snapshots(),
         builder: (context, snapshot) {
@@ -29,36 +29,51 @@ class CounselorNotificationsPage extends StatelessWidget {
 
           var messages = snapshot.data!.docs;
 
-          Map<String, dynamic> latestMessages = {};
+          Map<String, Map<String, dynamic>> latestMessages = {};
 
           for (var message in messages) {
             var data = message.data() as Map<String, dynamic>;
-            var senderId = data['senderId'];
-            if (senderId != currentUser!.uid) {
-              if (!latestMessages.containsKey(senderId) ||
-                  (latestMessages[senderId]['timestamp'] as Timestamp)
-                          .compareTo(data['timestamp'] as Timestamp) <
-                      0) {
-                latestMessages[senderId] = data;
-              }
+            var participants = List<String>.from(data['participants']);
+            var otherParticipant =
+                participants.firstWhere((id) => id != currentUser!.uid);
+
+            final user =
+                _firestore.collection('users').doc(otherParticipant).get();
+
+            if (!latestMessages.containsKey(otherParticipant) ||
+                (latestMessages[otherParticipant]!['timestamp'] as Timestamp)
+                        .compareTo(data['timestamp'] as Timestamp) <
+                    0) {
+              latestMessages[otherParticipant] = data;
             }
           }
 
+          var sortedMessages = latestMessages.values.toList()
+            ..sort((a, b) => (b['timestamp'] as Timestamp)
+                .compareTo(a['timestamp'] as Timestamp));
+
           return ListView(
-            children: latestMessages.values.map((message) {
-              return ListTile(
-                title: Text(message['text']),
-                subtitle: Text('From: ${message['senderId']}'),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => CounselorStudentPrivateChatPage(
-                        studentId: message['senderId'],
-                      ),
-                    ),
-                  );
-                },
+            children: sortedMessages.map((data) {
+              var otherParticipant = List<String>.from(data['participants'])
+                  .firstWhere((id) => id != currentUser!.uid);
+              return Column(
+                children: [
+                  ListTile(
+                    title: Text(otherParticipant),
+                    subtitle: Text(data['content'] ?? ''),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => CounselorStudentPrivateChatPage(
+                            studentId: otherParticipant,
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                  const Divider(),
+                ],
               );
             }).toList(),
           );

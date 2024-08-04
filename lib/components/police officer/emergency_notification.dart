@@ -1,5 +1,7 @@
-import 'package:cs_location_tracker_app/components/live_cases/map_area.dart';
+import 'dart:ui';
+import 'package:cs_location_tracker_app/components/police%20officer/map_area.dart';
 import 'package:flutter/material.dart';
+import '../../widgets/signout.dart';
 
 class EmergencyNotifications extends StatefulWidget {
   const EmergencyNotifications({super.key});
@@ -16,8 +18,21 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
       home: Scaffold(
         appBar: AppBar(
           title: const Text('Live Cases'),
-          centerTitle: true,
-          backgroundColor: Colors.blue,
+          backgroundColor: Colors.black.withOpacity(0.2), // Semi-transparent background color
+        elevation: 0, // Remove shadow to enhance the glass effect
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // Blur effect
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.2), // Background color with transparency
+              ),
+            ),
+          ),
+        ),
+        actions: const [
+          SignOutButton()
+          ],
         ),
         body: ListView.builder(
           itemCount: notifications.length,

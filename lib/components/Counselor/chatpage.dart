@@ -1,4 +1,4 @@
-import 'package:cs_location_tracker_app/components/Counselor/messageEnum.dart';
+import 'package:cs_location_tracker_app/components/counselor/message_enum.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';

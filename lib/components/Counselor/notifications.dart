@@ -1,6 +1,9 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../widgets/signout.dart';
 import 'chatpage.dart';
 
 class CounselorNotificationsPage extends StatelessWidget {
@@ -14,6 +17,21 @@ class CounselorNotificationsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Student Notifications'),
+        backgroundColor: Colors.black.withOpacity(0.2), // Semi-transparent background color
+        elevation: 0, // Remove shadow to enhance the glass effect
+        flexibleSpace: ClipRect(
+          child: BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0), // Blur effect
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.black.withOpacity(0.2), // Background color with transparency
+              ),
+            ),
+          ),
+        ),
+        actions: const [
+          SignOutButton()
+          ],
       ),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
@@ -37,9 +55,6 @@ class CounselorNotificationsPage extends StatelessWidget {
             var otherParticipant =
                 participants.firstWhere((id) => id != currentUser!.uid);
 
-            final user =
-                _firestore.collection('users').doc(otherParticipant).get();
-
             if (!latestMessages.containsKey(otherParticipant) ||
                 (latestMessages[otherParticipant]!['timestamp'] as Timestamp)
                         .compareTo(data['timestamp'] as Timestamp) <
@@ -56,24 +71,53 @@ class CounselorNotificationsPage extends StatelessWidget {
             children: sortedMessages.map((data) {
               var otherParticipant = List<String>.from(data['participants'])
                   .firstWhere((id) => id != currentUser!.uid);
-              return Column(
-                children: [
-                  ListTile(
-                    title: Text(otherParticipant),
-                    subtitle: Text(data['content'] ?? ''),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => CounselorStudentPrivateChatPage(
-                            studentId: otherParticipant,
-                          ),
+
+              return FutureBuilder<DocumentSnapshot>(
+                future:
+                    _firestore.collection('users').doc(otherParticipant).get(),
+                builder: (context, userSnapshot) {
+                  if (!userSnapshot.hasData) {
+                    return const ListTile(
+                      title: Text('Loading...'),
+                      subtitle: Text('Please wait'),
+                      tileColor: Colors.black45,
+                    );
+                  }
+
+                  var userData =
+                      userSnapshot.data!.data() as Map<String, dynamic>;
+
+                  print(userData['Reference number']);
+                  var userName = userData['fullName'] +
+                          "_" +
+                          userData['Reference number'] ??
+                      'Unknown';
+                  var lastMessage = data['content'] ?? 'N/A';
+
+                  return Column(
+                    children: [
+                      ListTile(
+                        title: Text(userName),
+                        subtitle: Text(
+                          lastMessage,
+                          style: const TextStyle(color: Colors.black45),
                         ),
-                      );
-                    },
-                  ),
-                  const Divider(),
-                ],
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  CounselorStudentPrivateChatPage(
+                                studentId: otherParticipant,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      const Divider(),
+                    ],
+                  );
+                },
               );
             }).toList(),
           );

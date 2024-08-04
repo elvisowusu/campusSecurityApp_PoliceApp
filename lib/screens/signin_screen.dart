@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cs_location_tracker_app/common/toast.dart';
-import 'package:cs_location_tracker_app/components/Counselor/notifications.dart';
-import 'package:cs_location_tracker_app/components/live_cases/emergency_notification.dart';
+import 'package:cs_location_tracker_app/components/counselor/notifications.dart';
+import 'package:cs_location_tracker_app/components/police%20officer/emergency_notification.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/forgot_password_screen.dart';
 import 'package:cs_location_tracker_app/screens/personnel_type.dart';
@@ -9,6 +8,7 @@ import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -211,21 +211,8 @@ class _SignInScreenState extends State<SignInScreen> {
                                   style: TextStyle(color: Colors.black45),
                                 )
                               ]),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (e) =>
-                                              const ForgotPasswordScreen()));
-                                },
-                                child: Text(
-                                  'Forgot password?',
-                                  style: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      color: lightColorScheme.primary),
-                                ),
-                              )
+                          //Reset Password 
+                              const ForgotPasswordScreen(),
                             ],
                           ),
                           const SizedBox(
@@ -391,29 +378,29 @@ class _SignInScreenState extends State<SignInScreen> {
           final role = userDoc.data()?['role'];
 
           if (role == 'Police Officer') {
-            showToast(message: 'Sign in successful!');
+            Fluttertoast.showToast(msg: 'Sign in successful!');
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(builder: (e) => const EmergencyNotifications()),
             );
           } else if (role == 'Counsellor') {
-            showToast(message: 'Sign in successful!');
+            Fluttertoast.showToast(msg: 'Sign in successful!');
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
                   builder: (e) => CounselorNotificationsPage()),
             );
           } else {
-            showToast(message: 'Unauthorized role or role not found.');
+            Fluttertoast.showToast(msg: 'Unauthorized role or role not found.');
           }
         } else {
-          showToast(message: 'Sign in failed!');
+          Fluttertoast.showToast(msg: 'Sign in failed!');
         }
       } on FirebaseAuthException catch (e) {
         setState(() {
           _isSigningIn = false;
         });
-        showToast(message: e.message ?? 'An error occurred during sign in.');
+        Fluttertoast.showToast(msg: e.message ?? 'An error occurred during sign in.');
       }
     } else {
       setState(() {
@@ -431,7 +418,6 @@ class _SignInScreenState extends State<SignInScreen> {
     }
   }
 
-  // Sign in with Google
   // Sign in with Google
   void _signInWithGoogle() async {
     // ignore: no_leading_underscores_for_local_identifiers
@@ -457,24 +443,24 @@ class _SignInScreenState extends State<SignInScreen> {
 
       // Navigate based on user role
       if (role == 'Police Officer') {
-        showToast(message: 'Sign in successful!');
+        Fluttertoast.showToast(msg: 'Sign in successful!');
         Navigator.pushReplacement(
           // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(builder: (e) => const EmergencyNotifications()),
         );
       } else if (role == 'Counsellor') {
-        showToast(message: 'Sign in successful!');
+        Fluttertoast.showToast(msg: 'Sign in successful!');
         Navigator.pushReplacement(
           // ignore: use_build_context_synchronously
           context,
           MaterialPageRoute(builder: (e) => CounselorNotificationsPage()),
         );
       } else {
-        showToast(message: 'Unauthorized role or role not found.');
+        Fluttertoast.showToast(msg: 'Unauthorized role or role not found.');
       }
     } else {
-      showToast(message: 'Sign in with Google failed or cancelled.');
+      Fluttertoast.showToast(msg: 'Sign in with Google failed or cancelled.');
     }
   }
 }

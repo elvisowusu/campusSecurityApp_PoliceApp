@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cs_location_tracker_app/common/toast.dart';
 import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:cs_location_tracker_app/screens/signin_screen.dart';
 import 'package:cs_location_tracker_app/theme/theme.dart';
@@ -7,6 +6,7 @@ import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -487,11 +487,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           'phoneNumber': phoneNumber,
           'createdAt': FieldValue.serverTimestamp(),
         });
-        showToast(message: "Sign up successful");
+        Fluttertoast.showToast(msg: "Sign up successful");
         Navigator.push(
             context, MaterialPageRoute(builder: (e) => const SignInScreen()));
       } else {
-        showToast(message: "Some error happened");
+        Fluttertoast.showToast(msg: "Some error happened");
       }
     } else {
       setState(() {
@@ -553,7 +553,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
         if (userDoc.exists) {
           // User already exists, handle accordingly (e.g., log in the user)
-          showToast(message: "Google account already exists!");
+          Fluttertoast.showToast(msg: "Google account already exists!");
           Navigator.push(
             context,
             MaterialPageRoute(builder: (e) => const SignInScreen()),
@@ -570,7 +570,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
             'phoneNumber': _phoneNumberController.text,
             'createdAt': FieldValue.serverTimestamp(),
           });
-          showToast(message: "Sign up successful");
+          Fluttertoast.showToast(msg: "Sign up successful");
           setState(() {
             _isSigningUpWithGoogle = false;
           });
@@ -580,11 +580,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
           );
         }
       } else {
-        showToast(message: "Some error happened");
+        Fluttertoast.showToast(msg: "Some error happened");
       }
     } catch (e) {
-      showToast(message: "Error signing up with Google: $e");
-      showToast(message: "Failed to sign up with Google.");
+      Fluttertoast.showToast(msg: "Error signing up with Google: $e");
+      Fluttertoast.showToast(msg: "Failed to sign up with Google.");
     } finally {
       setState(() {
         _isSigningUpWithGoogle = false;

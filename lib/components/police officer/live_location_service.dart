@@ -4,39 +4,76 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class LiveLocationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Stream<List<LiveLocation>> getLiveLocations() {
+  Stream<List<HelpRequest>> getActiveHelpRequests() {
     return _firestore
-        .collection('live_locations')
-        .orderBy('timestamp', descending: true)
+        .collection('help_requests')
+        .where('status', isEqualTo: 'active')
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
-        return LiveLocation(
+        return HelpRequest(
           studentUid: doc['studentUid'],
           studentName: doc['studentName'],
-          location: LatLng(
-            doc['location'].latitude,
-            doc['location'].longitude,
+          referenceNumber: doc['referenceNumber'],
+          initialLocation: LatLng(
+            doc['initialLocation'].latitude,
+            doc['initialLocation'].longitude,
           ),
+          currentLocation: doc['currentLocation'] != null
+              ? LatLng(
+                  doc['currentLocation'].latitude,
+                  doc['currentLocation'].longitude,
+                )
+              : null,
           timestamp: (doc['timestamp'] as Timestamp).toDate(),
           trackingId: doc['trackingId'],
         );
       }).toList();
     });
   }
+
+  Stream<HelpRequest> getHelpRequestUpdates(String trackingId) {
+    return _firestore
+        .collection('help_requests')
+        .doc(trackingId)
+        .snapshots()
+        .map((doc) {
+      return HelpRequest(
+        studentUid: doc['studentUid'],
+        studentName: doc['studentName'],
+        referenceNumber: doc['referenceNumber'],
+        initialLocation: LatLng(
+          doc['initialLocation'].latitude,
+          doc['initialLocation'].longitude,
+        ),
+        currentLocation: doc['currentLocation'] != null
+            ? LatLng(
+                doc['currentLocation'].latitude,
+                doc['currentLocation'].longitude,
+              )
+            : null,
+        timestamp: (doc['timestamp'] as Timestamp).toDate(),
+        trackingId: doc['trackingId'],
+      );
+    });
+  }
 }
 
-class LiveLocation {
+class HelpRequest {
   final String studentUid;
   final String studentName;
-  final LatLng location;
+  final String referenceNumber;
+  final LatLng initialLocation;
+  final LatLng? currentLocation;
   final DateTime timestamp;
   final String trackingId;
 
-  LiveLocation({
+  HelpRequest({
     required this.studentUid,
     required this.studentName,
-    required this.location,
+    required this.referenceNumber,
+    required this.initialLocation,
+    this.currentLocation,
     required this.timestamp,
     required this.trackingId,
   });

@@ -1,12 +1,14 @@
 import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+
 import 'live_location_service.dart';
 
 class MapArea extends StatefulWidget {
-  final LiveLocation liveLocation;
+  final HelpRequest helpRequest;
 
-  const MapArea({Key? key, required this.liveLocation}) : super(key: key);
+  const MapArea({super.key, required this.helpRequest});
 
   @override
   State<MapArea> createState() => _MapAreaState();
@@ -15,17 +17,16 @@ class MapArea extends StatefulWidget {
 class _MapAreaState extends State<MapArea> {
   final Completer<GoogleMapController> _controller = Completer<GoogleMapController>();
   final LiveLocationService _liveLocationService = LiveLocationService();
-  late StreamSubscription<List<LiveLocation>> _locationSubscription;
+  late StreamSubscription<HelpRequest> _locationSubscription;
+  Set<Marker> _markers = {};
 
   @override
   void initState() {
     super.initState();
-    _locationSubscription = _liveLocationService.getLiveLocations().listen((locations) {
-      final updatedLocation = locations.firstWhere(
-        (loc) => loc.trackingId == widget.liveLocation.trackingId,
-        orElse: () => widget.liveLocation,
-      );
-      _updateCameraPosition(updatedLocation.location);
+    _locationSubscription = _liveLocationService
+        .getHelpRequestUpdates(widget.helpRequest.trackingId)
+        .listen((updatedHelpRequest) {
+      _updateMarkers(updatedHelpRequest);
     });
   }
 
@@ -33,6 +34,26 @@ class _MapAreaState extends State<MapArea> {
   void dispose() {
     _locationSubscription.cancel();
     super.dispose();
+  }
+
+  void _updateMarkers(HelpRequest helpRequest) {
+    setState(() {
+      _markers.clear();
+      _markers.add(Marker(
+        markerId: MarkerId('initial_${helpRequest.trackingId}'),
+        position: helpRequest.initialLocation,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        infoWindow: const InfoWindow(title: 'Initial Location'),
+      ));
+      if (helpRequest.currentLocation != null) {
+        _markers.add(Marker(
+          markerId: MarkerId('current_${helpRequest.trackingId}'),
+          position: helpRequest.currentLocation!,
+          infoWindow: const InfoWindow(title: 'Current Location'),
+        ));
+        _updateCameraPosition(helpRequest.currentLocation!);
+      }
+    });
   }
 
   Future<void> _updateCameraPosition(LatLng position) async {
@@ -46,24 +67,18 @@ class _MapAreaState extends State<MapArea> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tracking ${widget.liveLocation.studentName}'),
+        title: Text('Tracking ${widget.helpRequest.studentName}'),
       ),
       body: GoogleMap(
         mapType: MapType.hybrid,
         initialCameraPosition: CameraPosition(
-          target: widget.liveLocation.location,
+          target: widget.helpRequest.initialLocation,
           zoom: 15,
         ),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
-        markers: {
-          Marker(
-            markerId: MarkerId(widget.liveLocation.trackingId),
-            position: widget.liveLocation.location,
-            infoWindow: InfoWindow(title: widget.liveLocation.studentName),
-          ),
-        },
+        markers: _markers,
       ),
     );
   }

@@ -1,91 +1,70 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:location/location.dart';
+import 'live_location_service.dart';
 
 class MapArea extends StatefulWidget {
-  const MapArea({super.key});
+  final LiveLocation liveLocation;
+
+  const MapArea({Key? key, required this.liveLocation}) : super(key: key);
 
   @override
   State<MapArea> createState() => _MapAreaState();
 }
 
 class _MapAreaState extends State<MapArea> {
-  final Completer<GoogleMapController> _controller =
-      Completer<GoogleMapController>();
+  final Completer<GoogleMapController> _controller = Completer<GoogleMapController>();
+  final LiveLocationService _liveLocationService = LiveLocationService();
+  late StreamSubscription<List<LiveLocation>> _locationSubscription;
 
- final Location _locationController = Location();
-
-  //Camera position for kumasi
-  static const CameraPosition _kKumasi = CameraPosition(
-    target: LatLng(6.6885, -1.6244),
-    zoom: 13,
-  );
-  LatLng? _currentPosition;
   @override
   void initState() {
     super.initState();
-    getCurrentLocation();
+    _locationSubscription = _liveLocationService.getLiveLocations().listen((locations) {
+      final updatedLocation = locations.firstWhere(
+        (loc) => loc.trackingId == widget.liveLocation.trackingId,
+        orElse: () => widget.liveLocation,
+      );
+      _updateCameraPosition(updatedLocation.location);
+    });
+  }
+
+  @override
+  void dispose() {
+    _locationSubscription.cancel();
+    super.dispose();
+  }
+
+  Future<void> _updateCameraPosition(LatLng position) async {
+    final GoogleMapController controller = await _controller.future;
+    controller.animateCamera(CameraUpdate.newCameraPosition(
+      CameraPosition(target: position, zoom: 15),
+    ));
   }
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-      body: _currentPosition == null
-      ? const Center(
-        child: Text("loading"),
-      ): GoogleMap(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Tracking ${widget.liveLocation.studentName}'),
+      ),
+      body: GoogleMap(
         mapType: MapType.hybrid,
-        initialCameraPosition: _kKumasi,
-        zoomControlsEnabled: true,
-        zoomGesturesEnabled: true,
-        myLocationButtonEnabled: true,
-        buildingsEnabled: true,
-        rotateGesturesEnabled: true,
+        initialCameraPosition: CameraPosition(
+          target: widget.liveLocation.location,
+          zoom: 15,
+        ),
         onMapCreated: (GoogleMapController controller) {
           _controller.complete(controller);
         },
         markers: {
           Marker(
-            markerId: const MarkerId("_currentLocation"),
-            icon: BitmapDescriptor.defaultMarker,
-            position: _currentPosition!,
-          )
-        }
+            markerId: MarkerId(widget.liveLocation.trackingId),
+            position: widget.liveLocation.location,
+            infoWindow: InfoWindow(title: widget.liveLocation.studentName),
+          ),
+        },
       ),
     );
-  }
-
-  //Getting current user location
-  Future<void> getCurrentLocation() async {
-    bool serviceEnabled;
-    PermissionStatus permissionGranted;
-
-    serviceEnabled = await _locationController.serviceEnabled();
-    if (serviceEnabled) {
-      serviceEnabled = await _locationController.requestService();
-    } else {
-      return;
-    }
-
-    permissionGranted = await _locationController.hasPermission();
-    if (permissionGranted == PermissionStatus.denied) {
-      permissionGranted = await _locationController.requestPermission();
-
-      if (permissionGranted != PermissionStatus.granted) {
-        return;
-      }
-    }
-
-    _locationController.onLocationChanged
-        .listen((LocationData currentLocation) {
-      if (currentLocation.latitude != null &&
-          currentLocation.longitude != null) {
-        setState(() {
-          _currentPosition =
-              LatLng(currentLocation.latitude!, currentLocation.longitude!);
-        });
-      }
-    });
   }
 }

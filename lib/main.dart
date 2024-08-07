@@ -25,7 +25,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: lightMode,
-      home: FirebaseAuth.instance.currentUser == null? const SplashScreen(): const EmergencyNotifications(),
+      home: FirebaseAuth.instance.currentUser == null? const SplashScreen(): EmergencyNotifications(),
     );
   }
 }

@@ -355,112 +355,118 @@ class _SignInScreenState extends State<SignInScreen> {
   }
 
   void _signIn() async {
-    if (_signInformKey.currentState!.validate()) {
+  if (_signInformKey.currentState!.validate()) {
+    setState(() {
+      _isSigningIn = true;
+    });
+
+    String email = _emailController.text;
+    String password = _passwordController.text;
+
+    try {
+      User? user = await _auth.signIn(email, password);
       setState(() {
-        _isSigningIn = true;
+        _isSigningIn = false;
       });
 
-      String email = _emailController.text;
-      String password = _passwordController.text;
+      if (user != null) {
+        // Check user's role and navigate accordingly
+        bool isPoliceOfficer = await _checkUserRole(user.uid, 'police_officers');
+        bool isCounselor = await _checkUserRole(user.uid, 'counselors');
 
-      try {
-        User? user = await _auth.signIn(email, password);
-        setState(() {
-          _isSigningIn = false;
-        });
-
-        if (user != null) {
-          // Fetch user role from Firestore
-          final userDoc = await FirebaseFirestore.instance
-              .collection('users')
-              .doc(user.uid)
-              .get();
-          final role = userDoc.data()?['role'];
-
-          if (role == 'Police Officer') {
-            Fluttertoast.showToast(msg: 'Sign in successful!');
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (e) => EmergencyNotifications()),
-            );
-          } else if (role == 'Counsellor') {
-            Fluttertoast.showToast(msg: 'Sign in successful!');
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (e) => CounselorNotificationsPage()),
-            );
-          } else {
-            Fluttertoast.showToast(msg: 'Unauthorized role or role not found.');
-          }
+        if (isPoliceOfficer) {
+          Fluttertoast.showToast(msg: 'Sign in successful as Police Officer!');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (e) => EmergencyNotifications(policeOfficerId: user.uid),
+            ),
+          );
+        } else if (isCounselor) {
+          Fluttertoast.showToast(msg: 'Sign in successful as Counselor!');
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (e) => CounselorNotificationsPage(),
+            ),
+          );
         } else {
-          Fluttertoast.showToast(msg: 'Sign in failed!');
+          Fluttertoast.showToast(msg: 'Unauthorized role or role not found.');
         }
-      } on FirebaseAuthException catch (e) {
-        setState(() {
-          _isSigningIn = false;
-        });
-        Fluttertoast.showToast(msg: e.message ?? 'An error occurred during sign in.');
+      } else {
+        Fluttertoast.showToast(msg: 'Sign in failed!');
       }
-    } else {
+    } on FirebaseAuthException catch (e) {
       setState(() {
-        // Update error messages if form is not valid
-        _emailError =
-            _emailController.text.isEmpty ? 'Please enter Email' : null;
-        _passwordError =
-            _passwordController.text.isEmpty ? 'Please enter Password' : null;
+        _isSigningIn = false;
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please complete the form and agree to the terms.'),
+      Fluttertoast.showToast(msg: e.message ?? 'An error occurred during sign in.');
+    }
+  } else {
+    setState(() {
+      // Update error messages if form is not valid
+      _emailError = _emailController.text.isEmpty ? 'Please enter Email' : null;
+      _passwordError = _passwordController.text.isEmpty ? 'Please enter Password' : null;
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Please complete the form and agree to the terms.'),
+      ),
+    );
+  }
+}
+
+// Helper function to check user's role
+Future<bool> _checkUserRole(String uid, String collection) async {
+  DocumentSnapshot userDoc = await FirebaseFirestore.instance
+      .collection(collection)
+      .doc(uid)
+      .get();
+  return userDoc.exists;
+}
+
+void _signInWithGoogle() async {
+  // ignore: no_leading_underscores_for_local_identifiers
+  FirebaseAuthService _authService = FirebaseAuthService();
+
+  setState(() {
+    _isSigningInWithGoogle = true;
+  });
+
+  User? user = await _authService.signInWithGoogle();
+
+  setState(() {
+    _isSigningInWithGoogle = false;
+  });
+
+  if (user != null) {
+    // Check user's role and navigate accordingly
+    bool isPoliceOfficer = await _checkUserRole(user.uid, 'police_officers');
+    bool isCounselor = await _checkUserRole(user.uid, 'counselors');
+
+    if (isPoliceOfficer) {
+      Fluttertoast.showToast(msg: 'Sign in successful as Police Officer!');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (e) => EmergencyNotifications(policeOfficerId: user.uid),
         ),
       );
-    }
-  }
-
-  // Sign in with Google
-  void _signInWithGoogle() async {
-    // ignore: no_leading_underscores_for_local_identifiers
-    FirebaseAuthService _authService = FirebaseAuthService();
-
-    setState(() {
-      _isSigningInWithGoogle = true;
-    });
-
-    User? user = await _authService.signInWithGoogle();
-
-    setState(() {
-      _isSigningInWithGoogle = false;
-    });
-
-    if (user != null) {
-      // Fetch user role from Firestore
-      final userDoc = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .get();
-      final role = userDoc.data()?['role'];
-
-      // Navigate based on user role
-      if (role == 'Police Officer') {
-        Fluttertoast.showToast(msg: 'Sign in successful!');
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(builder: (e) => EmergencyNotifications()),
-        );
-      } else if (role == 'Counsellor') {
-        Fluttertoast.showToast(msg: 'Sign in successful!');
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          MaterialPageRoute(builder: (e) => CounselorNotificationsPage()),
-        );
-      } else {
-        Fluttertoast.showToast(msg: 'Unauthorized role or role not found.');
-      }
+    } else if (isCounselor) {
+      Fluttertoast.showToast(msg: 'Sign in successful as Counselor!');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (e) => CounselorNotificationsPage(),
+        ),
+      );
     } else {
-      Fluttertoast.showToast(msg: 'Sign in with Google failed or cancelled.');
+      Fluttertoast.showToast(msg: 'Unauthorized role or role not found.');
     }
+  } else {
+    Fluttertoast.showToast(msg: 'Sign in with Google failed or cancelled.');
   }
+}
+
+
 }

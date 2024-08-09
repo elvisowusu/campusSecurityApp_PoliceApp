@@ -4,6 +4,18 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 class LiveLocationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  Stream<LatLng> getPoliceOfficerLocation(String officerId) {
+    return FirebaseFirestore.instance
+        .collection('police_officers')
+        .doc(officerId)
+        .snapshots()
+        .map((snapshot) {
+      final data = snapshot.data() as Map<String, dynamic>;
+      return LatLng(data['location'].latitude, data['location'].longitude);
+    });
+  }
+  
+  
   Stream<List<HelpRequest>> getActiveHelpRequests() {
     return _firestore
         .collection('help_requests')

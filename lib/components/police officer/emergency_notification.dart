@@ -8,8 +8,9 @@ import 'live_location_service.dart';
 
 class EmergencyNotifications extends StatelessWidget {
   final LiveLocationService _liveLocationService = LiveLocationService();
+  final String policeOfficerId;
 
-  EmergencyNotifications({super.key});
+  EmergencyNotifications({super.key, required this.policeOfficerId});
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +56,7 @@ class EmergencyNotifications extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MapArea(helpRequest: helpRequest),
+                      builder: (context) => MapArea(helpRequest: helpRequest, policeOfficerId: policeOfficerId),
                     ),
                   );
                 },

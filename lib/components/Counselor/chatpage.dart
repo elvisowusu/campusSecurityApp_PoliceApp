@@ -25,7 +25,7 @@ class _CounselorStudentPrivateChatPageState
     super.initState();
     _currentUser = FirebaseAuth.instance.currentUser;
     _messagesCollection = _firestore
-        .collection('users')
+        .collection('counselors')
         .doc(_currentUser!.uid)
         .collection('chats')
         .doc(widget.studentId)
@@ -36,7 +36,7 @@ class _CounselorStudentPrivateChatPageState
     if (content.trim().isEmpty) return;
 
     final userChatsCollection = _firestore
-        .collection('users')
+        .collection('counselors')
         .doc(_currentUser!.uid)
         .collection('chats');
 

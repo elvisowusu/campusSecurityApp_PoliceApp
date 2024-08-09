@@ -32,7 +32,8 @@ class RoleSelectionScreen extends StatelessWidget {
                     child: Container(
                       width: double.infinity,
                       decoration: BoxDecoration(
-                        color: const Color.fromARGB(255, 95, 92, 92).withOpacity(0.2),
+                        color: const Color.fromARGB(255, 95, 92, 92)
+                            .withOpacity(0.2),
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(40),
                           topRight: Radius.circular(40),
@@ -56,8 +57,8 @@ class RoleSelectionScreen extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        const SignUpScreen(role: 'Police Officer'),
+                                    builder: (context) => const SignUpScreen(
+                                        role: 'police_officers'),
                                   ),
                                 );
                               },
@@ -86,7 +87,7 @@ class RoleSelectionScreen extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                     builder: (context) =>
-                                        const SignUpScreen(role: 'Counsellor'),
+                                        const SignUpScreen(role: 'counselors'),
                                   ),
                                 );
                               },
@@ -99,7 +100,7 @@ class RoleSelectionScreen extends StatelessWidget {
                                 ),
                                 child: const Center(
                                   child: Text(
-                                    "Counsellor",
+                                    "Counselor",
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,

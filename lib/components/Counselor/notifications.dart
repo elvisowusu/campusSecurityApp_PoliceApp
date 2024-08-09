@@ -74,7 +74,7 @@ class CounselorNotificationsPage extends StatelessWidget {
 
               return FutureBuilder<DocumentSnapshot>(
                 future:
-                    _firestore.collection('users').doc(otherParticipant).get(),
+                    _firestore.collection('counselors').doc(otherParticipant).get(),
                 builder: (context, userSnapshot) {
                   if (!userSnapshot.hasData) {
                     return const ListTile(

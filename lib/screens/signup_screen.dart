@@ -5,7 +5,6 @@ import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -27,17 +26,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _fullNameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _phoneNumberController = TextEditingController();
 
   final FocusNode _fullNameFocusNode = FocusNode();
   final FocusNode _emailFocusNode = FocusNode();
   final FocusNode _passwordFocusNode = FocusNode();
-  final FocusNode _phoneNumberFocusNode = FocusNode();
 
   String? _fullNameError;
   String? _emailError;
   String? _passwordError;
-  String? _phoneNumberError;
 
   // Flag for password visibility
   bool _showPassword = false;
@@ -69,14 +65,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
         });
       }
     });
-
-    _phoneNumberFocusNode.addListener(() {
-      if (_phoneNumberFocusNode.hasFocus) {
-        setState(() {
-          _phoneNumberError = null;
-        });
-      }
-    });
   }
 
   @override
@@ -84,11 +72,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _fullNameController.dispose();
     _emailController.dispose();
     _passwordController.dispose();
-    _phoneNumberController.dispose();
     _fullNameFocusNode.dispose();
     _emailFocusNode.dispose();
     _passwordFocusNode.dispose();
-    _phoneNumberFocusNode.dispose();
     super.dispose();
   }
 
@@ -242,46 +228,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                                 _showPassword = !_showPassword;
                               });
                             },
-                          ),
-                        ),
-                      ),
-                      const SizedBox(
-                        height: 15.0,
-                      ),
-                      TextFormField(
-                        controller: _phoneNumberController,
-                        focusNode: _phoneNumberFocusNode,
-                        autovalidateMode: AutovalidateMode.onUserInteraction,
-                        inputFormatters: [
-                          FilteringTextInputFormatter.digitsOnly,
-                          LengthLimitingTextInputFormatter(10),
-                        ],
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter Phone Number';
-                          } else if (value.length != 10) {
-                            return 'Invalid Phone Number';
-                          }
-                          return null;
-                        },
-                        decoration: InputDecoration(
-                          label: const Text('Phone Number'),
-                          hintText: 'Enter Phone Number',
-                          hintStyle: const TextStyle(
-                            color: Colors.black26,
-                          ),
-                          errorText: _phoneNumberError,
-                          border: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.black12,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide: const BorderSide(
-                              color: Colors.black12,
-                            ),
-                            borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                       ),
@@ -456,14 +402,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   void _signUp() async {
     if (_signUpFormKey.currentState!.validate()) {
-      // Validate Ghanaian phone number format
-      final ghanaPhoneNumberRegex = RegExp(r'^[0][2-9][0-9]{8}$');
-      if (!ghanaPhoneNumberRegex.hasMatch(_phoneNumberController.text)) {
-        setState(() {
-          _phoneNumberError = 'Invalid Ghanaian Phone Number';
-        });
-        return;
-      }
       //loader
       setState(() {
         _isSigningUp = true;
@@ -472,7 +410,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
       String fullName = _fullNameController.text;
       String email = _emailController.text;
       String password = _passwordController.text;
-      String phoneNumber = _phoneNumberController.text;
 
       User? user = await _auth.signUp(email, password);
       setState(() {
@@ -480,11 +417,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       if (user != null) {
-        await FirebaseFirestore.instance.collection('users').doc(user.uid).set({
+        await FirebaseFirestore.instance.collection(widget.role).doc(user.uid).set({
           'fullName': fullName,
           'email': email,
-          'role': widget.role,
-          'phoneNumber': phoneNumber,
           'createdAt': FieldValue.serverTimestamp(),
         });
         Fluttertoast.showToast(msg: "Sign up successful");
@@ -502,9 +437,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
             _emailController.text.isEmpty ? 'Please enter Email' : null;
         _passwordError =
             _passwordController.text.isEmpty ? 'Please enter Password' : null;
-        _phoneNumberError = _phoneNumberController.text.isEmpty
-            ? 'Please enter Phone Number'
-            : null;
       });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -515,26 +447,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // Sign up with Google
   void _signUpWithGoogle() async {
-    // Validate phone number
-    if (_phoneNumberController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter Phone Number.'),
-        ),
-      );
-      return;
-    }
-
-    // Validate Ghanaian phone number format
-    final ghanaPhoneNumberRegex = RegExp(r'^[0][2-9][0-9]{8}$');
-    if (!ghanaPhoneNumberRegex.hasMatch(_phoneNumberController.text)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Invalid Ghanaian Phone Number.'),
-        ),
-      );
-      return;
-    }
 
     setState(() {
       _isSigningUpWithGoogle = true;
@@ -547,7 +459,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       if (user != null) {
         // Check if user already exists in the database
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
-            .collection('users')
+            .collection(widget.role)
             .doc(user.uid)
             .get();
 
@@ -561,13 +473,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
         } else {
           // Add user to the database
           await FirebaseFirestore.instance
-              .collection('users')
+              .collection(widget.role)
               .doc(user.uid)
               .set({
             'fullName': user.displayName,
             'email': user.email,
-            'role': widget.role,
-            'phoneNumber': _phoneNumberController.text,
             'createdAt': FieldValue.serverTimestamp(),
           });
           Fluttertoast.showToast(msg: "Sign up successful");

@@ -27,50 +27,48 @@ class _MapAreaState extends State<MapArea> {
     _setupLocationStreams();
   }
 
-  void _setupLocationStreams() {
-    // Student location stream
-    _studentLocationSubscription = _liveLocationService
-        .getHelpRequestUpdates(widget.helpRequest.trackingId)
-        .listen((updatedHelpRequest) {
-      _updateMarkers(updatedHelpRequest, isStudent: true);
-    });
+ void _setupLocationStreams() {
+  // Student location stream
+  _studentLocationSubscription = _liveLocationService
+      .getHelpRequestUpdates(widget.helpRequest.trackingId)
+      .listen((updatedHelpRequest) {
+    _updateMarkers(updatedHelpRequest.currentLocation!, isStudent: true);
+  });
 
-    // Police officer location stream
-    _policeLocationSubscription = _liveLocationService
-        .getPoliceOfficerLocation(widget.policeOfficerId)
-        .listen((policeLocation) {
-      _updateMarkers(policeLocation, isStudent: false);
-    });
-  }
+  // Police officer location stream
+  _policeLocationSubscription = _liveLocationService
+      .getPoliceOfficerLocation(widget.policeOfficerId)
+      .listen((policeLocation) {
+    _updateMarkers(policeLocation, isStudent: false);
+  });
+}
 
-  void _updateMarkers(dynamic locationData, {required bool isStudent}) {
-    setState(() {
-      if (isStudent) {
-        // Update student marker
-        _markers.removeWhere((marker) => marker.markerId.value == 'student');
-        if (locationData.currentLocation != null) {
-          _markers.add(Marker(
-            markerId: const MarkerId('student'),
-            position: locationData.currentLocation!,
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-            infoWindow: InfoWindow(title: locationData.studentName),
-          ));
-        }
-      } else {
-        // Update police officer marker
-        _markers.removeWhere((marker) => marker.markerId.value == 'police');
-        _markers.add(Marker(
-          markerId: const MarkerId('police'),
-          position: locationData,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: const InfoWindow(title: 'Police Officer'),
-        ));
-      }
+void _updateMarkers(LatLng location, {required bool isStudent}) {
+  setState(() {
+    if (isStudent) {
+      // Update student marker
+      _markers.removeWhere((marker) => marker.markerId.value == 'student');
+      _markers.add(Marker(
+        markerId: const MarkerId('student'),
+        position: location,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        infoWindow: InfoWindow(title: widget.helpRequest.studentName),
+      ));
+    } else {
+      // Update police officer marker
+      _markers.removeWhere((marker) => marker.markerId.value == 'police');
+      _markers.add(Marker(
+        markerId: const MarkerId('police'),
+        position: location,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        infoWindow: const InfoWindow(title: 'Police Officer'),
+      ));
+    }
 
-      _updatePolyline();
-      _updateCameraPosition();
-    });
-  }
+    _updatePolyline();
+    _updateCameraPosition();
+  });
+}
 
   void _updatePolyline() {
     final studentMarker = _markers.firstWhere(

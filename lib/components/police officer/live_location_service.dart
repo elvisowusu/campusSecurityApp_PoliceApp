@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:geolocator/geolocator.dart';
 
 class LiveLocationService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Stream<LatLng> getPoliceOfficerLocation(String officerId) {
-    return FirebaseFirestore.instance
+    return _firestore
         .collection('police_officers')
         .doc(officerId)
         .snapshots()
@@ -14,8 +15,7 @@ class LiveLocationService {
       return LatLng(data['location'].latitude, data['location'].longitude);
     });
   }
-  
-  
+
   Stream<List<HelpRequest>> getActiveHelpRequests() {
     return _firestore
         .collection('help_requests')
@@ -50,23 +50,75 @@ class LiveLocationService {
         .doc(trackingId)
         .snapshots()
         .map((doc) {
+      final data = doc.data() as Map<String, dynamic>;
       return HelpRequest(
-        studentUid: doc['studentUid'],
-        studentName: doc['studentName'],
-        referenceNumber: doc['referenceNumber'],
+        studentUid: data['studentUid'],
+        studentName: data['studentName'],
+        referenceNumber: data['referenceNumber'],
         initialLocation: LatLng(
-          doc['initialLocation'].latitude,
-          doc['initialLocation'].longitude,
+          data['initialLocation'].latitude,
+          data['initialLocation'].longitude,
         ),
-        currentLocation: doc['currentLocation'] != null
+        currentLocation: data['currentLocation'] != null
             ? LatLng(
-                doc['currentLocation'].latitude,
-                doc['currentLocation'].longitude,
+                data['currentLocation'].latitude,
+                data['currentLocation'].longitude,
               )
             : null,
-        timestamp: (doc['timestamp'] as Timestamp).toDate(),
-        trackingId: doc['trackingId'],
+        timestamp: (data['timestamp'] as Timestamp).toDate(),
+        trackingId: data['trackingId'],
       );
+    });
+  }
+
+  // New method to update police officer location
+  Future<void> updatePoliceOfficerLocation(String officerId, Position position) async {
+    await _firestore.collection('police_officers').doc(officerId).update({
+      'location': GeoPoint(position.latitude, position.longitude),
+      'lastUpdated': FieldValue.serverTimestamp(),
+    });
+  }
+
+  // New method to get current position
+  Future<Position> getCurrentPosition() async {
+    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw Exception('Location services are disabled.');
+    }
+
+    LocationPermission permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.denied) {
+      permission = await Geolocator.requestPermission();
+      if (permission == LocationPermission.denied) {
+        throw Exception('Location permissions are denied.');
+      }
+    }
+
+    if (permission == LocationPermission.deniedForever) {
+      throw Exception('Location permissions are permanently denied.');
+    }
+
+    return await Geolocator.getCurrentPosition(
+      desiredAccuracy: LocationAccuracy.best,
+    );
+  }
+
+  // New method to start periodic location updates
+  void startPeriodicLocationUpdates(String officerId, {Duration interval = const Duration(seconds: 10)}) {
+    Stream.periodic(interval).listen((_) async {
+      try {
+        Position position = await getCurrentPosition();
+        await updatePoliceOfficerLocation(officerId, position);
+      } catch (e) {
+        print("Error updating police officer location: $e");
+      }
+    });
+  }
+
+  // New method to update help request status
+  Future<void> updateHelpRequestStatus(String trackingId, String status) async {
+    await _firestore.collection('help_requests').doc(trackingId).update({
+      'status': status,
     });
   }
 }

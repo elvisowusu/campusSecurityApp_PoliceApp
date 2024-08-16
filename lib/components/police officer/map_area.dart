@@ -18,8 +18,8 @@ class _MapAreaState extends State<MapArea> {
   final LiveLocationService _liveLocationService = LiveLocationService();
   late StreamSubscription _studentLocationSubscription;
   late StreamSubscription _policeLocationSubscription;
-  Set<Marker> _markers = {};
-  Set<Polyline> _polylines = {};
+  final Set<Marker> _markers = {};
+  final Set<Polyline> _polylines = {};
 
   @override
   void initState() {
@@ -80,16 +80,14 @@ void _updateMarkers(LatLng location, {required bool isStudent}) {
       orElse: () => null as Marker,
     );
 
-    if (studentMarker != null && policeMarker != null) {
-      _polylines.clear();
-      _polylines.add(Polyline(
-        polylineId: const PolylineId('student_to_police'),
-        color: Colors.green,
-        width: 5,
-        points: [studentMarker.position, policeMarker.position],
-      ));
+    _polylines.clear();
+    _polylines.add(Polyline(
+      polylineId: const PolylineId('student_to_police'),
+      color: Colors.green,
+      width: 5,
+      points: [studentMarker.position, policeMarker.position],
+    ));
     }
-  }
 
   Future<void> _updateCameraPosition() async {
     if (_markers.length < 2) return;

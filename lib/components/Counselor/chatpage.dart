@@ -35,7 +35,7 @@ class _CounselorStudentPrivateChatPageState
   void _sendMessage(String content) async {
     if (content.trim().isEmpty) return;
 
-    final userChatsCollection = _firestore
+    _firestore
         .collection('counselors')
         .doc(_currentUser!.uid)
         .collection('chats');

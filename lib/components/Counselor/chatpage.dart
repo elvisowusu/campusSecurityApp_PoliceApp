@@ -30,7 +30,20 @@ class _CounselorStudentPrivateChatPageState
         .collection('chats')
         .doc(widget.studentId)
         .collection('messages');
+         _markMessagesAsRead();
   }
+  void _markMessagesAsRead() async {
+  QuerySnapshot unreadMessages = await _messagesCollection
+      .where('senderId', isEqualTo: widget.studentId)
+      .where('read', isEqualTo: false)
+      .get();
+
+  WriteBatch batch = _firestore.batch();
+  for (QueryDocumentSnapshot doc in unreadMessages.docs) {
+    batch.update(doc.reference, {'read': true});
+  }
+  await batch.commit();
+}
 
   void _sendMessage(String content) async {
     if (content.trim().isEmpty) return;
@@ -46,6 +59,7 @@ class _CounselorStudentPrivateChatPageState
       'timestamp': Timestamp.now(),
       'type': 'text',
       'participants': [currentUser!.uid, widget.studentId],
+      'read': false, 
     });
 
     _messageController.clear();

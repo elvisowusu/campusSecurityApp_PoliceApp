@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -37,7 +39,9 @@ class _CounselorStudentPrivateChatPageState
 
   @override
   void dispose() {
-    _animationControllers.values.forEach((controller) => controller.dispose());
+    for (var controller in _animationControllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -143,7 +147,7 @@ class _CounselorStudentPrivateChatPageState
             margin: const EdgeInsets.symmetric(vertical: 5.0, horizontal: 8.0),
             padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
             constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.75,
+              maxWidth: MediaQuery.of(context).size.width * 0.5,
             ),
             decoration: BoxDecoration(
               color: isMe ? const Color(0xFFDCF8C6) : Colors.white,
@@ -153,6 +157,14 @@ class _CounselorStudentPrivateChatPageState
                 bottomLeft: Radius.circular(isMe ? 16.0 : 0.0),
                 bottomRight: Radius.circular(isMe ? 0.0 : 16.0),
               ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: const Offset(0, 3),
+                ),
+              ],
             ),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -161,6 +173,7 @@ class _CounselorStudentPrivateChatPageState
                   Container(
                     margin: const EdgeInsets.only(bottom: 5.0),
                     padding: const EdgeInsets.all(5.0),
+                    width: max(3, 420),
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(8.0),

@@ -24,7 +24,8 @@ class _CounselorStudentPrivateChatPageState
   String? _replyingToMessage;
   final ScrollController _scrollController = ScrollController();
   final Map<String, AnimationController> _animationControllers = {};
-
+  String? _replyingToMessageId;
+  
   @override
   void initState() {
     super.initState();
@@ -69,10 +70,12 @@ class _CounselorStudentPrivateChatPageState
       'participants': [currentUser!.uid, widget.studentId],
       'read': false,
       'replyingTo': _replyingToMessage,
+      'replyingToId': _replyingToMessageId, 
     });
 
     setState(() {
       _replyingToMessage = null;
+       _replyingToMessageId = null; 
     });
 
     _messageController.clear();

@@ -85,7 +85,7 @@ class CounselorNotificationsPage extends StatelessWidget {
                   var messageContent = '$sender${latestMessage['content']}';
 
                   var timestamp = latestMessage['timestamp'] as Timestamp;
-                  var time = DateFormat('h:mm a').format(timestamp.toDate()); // Format the time
+                  var time = DateFormat('h:mm a').format(timestamp.toDate());
 
                   var unreadCount = messageSnapshot.data!.docs.where((doc) {
                     var data = doc.data() as Map<String, dynamic>;

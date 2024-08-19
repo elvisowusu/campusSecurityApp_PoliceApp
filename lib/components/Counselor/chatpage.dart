@@ -91,14 +91,31 @@ class _CounselorStudentPrivateChatPageState
       );
     }
   }
+  void _scrollToMessage(String messageId) {
+  for (int i = 0; i < _scrollController.position.maxScrollExtent.toInt(); i++) {
+    if (_animationControllers.containsKey(messageId)) {
+      _scrollController.animateTo(
+        i.toDouble(),
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+      return;
+    }
+  }
+}
 
   String _formatTimestamp(Timestamp timestamp) {
-    DateTime dateTime = timestamp.toDate();
-    return '${dateTime.hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')}';
-  }
+  DateTime dateTime = timestamp.toDate();
+  int hour = dateTime.hour;
+  String period = hour >= 12 ? 'PM' : 'AM';
+  hour = hour % 12;
+  hour = hour == 0 ? 12 : hour; // convert hour '0' to '12' for 12 AM/PM
+  return '${hour.toString().padLeft(2, '0')}:${dateTime.minute.toString().padLeft(2, '0')} $period';
+}
+
 
   Widget _buildMessageBubble(
-      String message, bool isMe, String? replyingToMessage, Timestamp timestamp, String messageId) {
+      String message, bool isMe, String? replyingToMessage, Timestamp timestamp, String messageId, String? replyingToMessageId) {
     if (!_animationControllers.containsKey(messageId)) {
       _animationControllers[messageId] = AnimationController(
         vsync: this,
@@ -113,7 +130,7 @@ class _CounselorStudentPrivateChatPageState
         onHorizontalDragUpdate: (details) {
           animationController.value += details.primaryDelta! / 100 * (isMe ? -1 : 1);
         },
-        onHorizontalDragEnd: (details) {
+         onHorizontalDragEnd: (details) {
           if (animationController.value.abs() > 0.5) {
             setState(() {
               _replyingToMessage = message;
@@ -173,37 +190,42 @@ class _CounselorStudentPrivateChatPageState
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 if (replyingToMessage != null)
-                  Container(
+                GestureDetector(
+                  onTap: () {
+                    if (replyingToMessageId != null) {
+                      _scrollToMessage(replyingToMessageId);
+                    }
+                  },
+                  child:Container(
                     margin: const EdgeInsets.only(bottom: 5.0),
                     padding: const EdgeInsets.all(5.0),
-                    width: max(3, 420),
+                    width: double.infinity,
                     decoration: BoxDecoration(
                       color: Colors.grey[200],
                       borderRadius: BorderRadius.circular(8.0),
                     ),
                     child: Text(
                       replyingToMessage,
-                      style: TextStyle(
+                      style: const TextStyle(
+                        color: Colors.black54,
                         fontSize: 12.0,
-                        color: Colors.grey[600],
+                        fontStyle: FontStyle.normal,
                       ),
                     ),
                   ),
+                ),
                 Text(
                   message,
                   style: const TextStyle(
-                    color: Colors.black,
+                    fontSize: 16.0,
+                    color: Colors.black87,
                   ),
                 ),
-                const SizedBox(height: 2),
-                Align(
-                  alignment: Alignment.bottomRight,
-                  child: Text(
-                    _formatTimestamp(timestamp),
-                    style: TextStyle(
-                      fontSize: 10.0,
-                      color: Colors.grey[600],
-                    ),
+                Text(
+                  _formatTimestamp(timestamp),
+                  style: TextStyle(
+                    fontSize: 10.0,
+                    color: Colors.grey[600],
                   ),
                 ),
               ],
@@ -264,6 +286,7 @@ class _CounselorStudentPrivateChatPageState
                         String? replyingToMessage = data['replyingTo'];
                         Timestamp timestamp = data['timestamp'];
                         bool isMe = senderId == currentUser!.uid;
+                        String? replyingToMessageId = data['replyingToId'];
 
                         return _buildMessageBubble(
                           message,
@@ -271,6 +294,7 @@ class _CounselorStudentPrivateChatPageState
                           replyingToMessage,
                           timestamp,
                           document.id,
+                          replyingToMessageId,
                         );
                       },
                     );

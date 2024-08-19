@@ -222,7 +222,14 @@ class _CounselorStudentPrivateChatPageState
         appBar: AppBar(
           title: const Text('Chat with Student'),
         ),
-        body: SafeArea(
+        body:  Container(
+    decoration: const BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage('assets/images/chatbg.png'),
+        fit: BoxFit.cover,
+      ),
+    ),
+        child:SafeArea(
           child: Column(
             children: [
               Expanded(
@@ -325,6 +332,7 @@ class _CounselorStudentPrivateChatPageState
           ),
         ),
       ),
+      )
     );
   }
 }

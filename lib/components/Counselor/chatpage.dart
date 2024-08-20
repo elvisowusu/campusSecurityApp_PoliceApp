@@ -17,7 +17,8 @@ class CounselorStudentPrivateChatPage extends StatefulWidget {
       _CounselorStudentPrivateChatPageState();
 }
 
-class _CounselorStudentPrivateChatPageState extends State<CounselorStudentPrivateChatPage> {
+class _CounselorStudentPrivateChatPageState
+    extends State<CounselorStudentPrivateChatPage> {
   final TextEditingController _messageController = TextEditingController();
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final User? currentUser = FirebaseAuth.instance.currentUser;
@@ -27,37 +28,37 @@ class _CounselorStudentPrivateChatPageState extends State<CounselorStudentPrivat
   String? _selectedMessageId;
   String? _replyingToMessageId;
 
+  void _handleReply(String message, String messageId) {
+    setState(() {
+      _replyingToMessage = message;
+      _replyingToMessageId = messageId;
+    });
+  }
 
-void _handleReply(String message, String messageId) {
-  setState(() {
-    _replyingToMessage = message;
-    _replyingToMessageId = messageId;
-  });
-}
+  void _cancelReply() {
+    setState(() {
+      _replyingToMessage = null;
+      _replyingToMessageId = null;
+    });
+  }
 
-void _cancelReply() {
-  setState(() {
-    _replyingToMessage = null;
-    _replyingToMessageId = null;
-  });
-}
-
-
-void scrollToMessage(String messageId, ScrollController scrollController) {
-  // This is a basic implementation. You might need to adjust it based on your specific needs.
-  WidgetsBinding.instance.addPostFrameCallback((_) {
-    for (int i = 0; i < scrollController.position.maxScrollExtent.toInt(); i++) {
-      if (scrollController.position.pixels == i) {
-        scrollController.animateTo(
-          i.toDouble(),
-          duration: const Duration(milliseconds: 300),
-          curve: Curves.easeOut,
-        );
-        return;
+  void scrollToMessage(String messageId, ScrollController scrollController) {
+    // This is a basic implementation. You might need to adjust it based on your specific needs.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      for (int i = 0;
+          i < scrollController.position.maxScrollExtent.toInt();
+          i++) {
+        if (scrollController.position.pixels == i) {
+          scrollController.animateTo(
+            i.toDouble(),
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeOut,
+          );
+          return;
+        }
       }
-    }
-  });
-}
+    });
+  }
 
   @override
   void initState() {
@@ -72,56 +73,56 @@ void scrollToMessage(String messageId, ScrollController scrollController) {
   }
 
   // Build AppBar actions for copying or deleting the selected message
-Widget buildAppBarActions(String? selectedMessageId, BuildContext context, void Function(VoidCallback fn) setState) {
-  if (selectedMessageId == null) {
-    return const Text('Chat with Student');
-  } else {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        IconButton(
-          icon: const Icon(Icons.copy),
-          onPressed: () async {
-            // Retrieve the selected message content
-            DocumentSnapshot selectedMessageSnapshot =
-                await _messagesCollection.doc(selectedMessageId).get();
-            String messageToCopy = selectedMessageSnapshot['content'];
+  Widget buildAppBarActions(String? selectedMessageId, BuildContext context,
+      void Function(VoidCallback fn) setState) {
+    if (selectedMessageId == null) {
+      return const Text('Chat with Student');
+    } else {
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          IconButton(
+            icon: const Icon(Icons.copy),
+            onPressed: () async {
+              // Retrieve the selected message content
+              DocumentSnapshot selectedMessageSnapshot =
+                  await _messagesCollection.doc(selectedMessageId).get();
+              String messageToCopy = selectedMessageSnapshot['content'];
 
-            // Copy the message to the clipboard
-            copyMessage(messageToCopy, context);
+              // Copy the message to the clipboard
+              copyMessage(messageToCopy, context);
 
-            // Deselect the message after copying
-            setState(() {
-              _selectedMessageId = null;
-            });
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.delete),
-          onPressed: () async {
-            // Delete the selected message
-            deleteMessage(selectedMessageId, _messagesCollection, () {
-              // Callback after deletion
+              // Deselect the message after copying
               setState(() {
                 _selectedMessageId = null;
               });
-            });
-          },
-        ),
-        IconButton(
-          icon: const Icon(Icons.cancel),
-          onPressed: () {
-            // Deselect the message (Cancel action)
-            setState(() {
-              _selectedMessageId = null;
-            });
-          },
-        ),
-      ],
-    );
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.delete),
+            onPressed: () async {
+              // Delete the selected message
+              deleteMessage(selectedMessageId, _messagesCollection, () {
+                // Callback after deletion
+                setState(() {
+                  _selectedMessageId = null;
+                });
+              });
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.cancel),
+            onPressed: () {
+              // Deselect the message (Cancel action)
+              setState(() {
+                _selectedMessageId = null;
+              });
+            },
+          ),
+        ],
+      );
+    }
   }
-}
-
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +149,9 @@ Widget buildAppBarActions(String? selectedMessageId, BuildContext context, void 
               children: [
                 Expanded(
                   child: StreamBuilder<QuerySnapshot>(
-                    stream: _messagesCollection.orderBy('timestamp', descending: true).snapshots(),
+                    stream: _messagesCollection
+                        .orderBy('timestamp', descending: true)
+                        .snapshots(),
                     builder: (context, snapshot) {
                       if (!snapshot.hasData) {
                         return const Center(child: CircularProgressIndicator());
@@ -166,7 +169,8 @@ Widget buildAppBarActions(String? selectedMessageId, BuildContext context, void 
                         itemCount: messages.length,
                         itemBuilder: (context, index) {
                           DocumentSnapshot document = messages[index];
-                          Map<String, dynamic> data = document.data() as Map<String, dynamic>;
+                          Map<String, dynamic> data =
+                              document.data() as Map<String, dynamic>;
                           return MessageBubble(
                             message: data['content'],
                             isMe: data['senderId'] == currentUser!.uid,
@@ -175,7 +179,8 @@ Widget buildAppBarActions(String? selectedMessageId, BuildContext context, void 
                             messageId: document.id,
                             replyingToMessageId: data['replyingToId'],
                             selectedMessageId: _selectedMessageId,
-                            onSelectMessage: (id) => setState(() => _selectedMessageId = id),
+                            onSelectMessage: (id) =>
+                                setState(() => _selectedMessageId = id),
                             onReply: _handleReply,
                           );
                         },

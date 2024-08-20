@@ -8,7 +8,6 @@ class MessageBubble extends StatefulWidget {
   final String? replyingToMessage;
   final Timestamp timestamp;
   final String messageId;
-  
   final String? replyingToMessageId;
   final String? selectedMessageId;
   final Function(String) onSelectMessage;
@@ -31,8 +30,9 @@ class MessageBubble extends StatefulWidget {
   State<MessageBubble> createState() => _MessageBubbleState();
 }
 
-class _MessageBubbleState extends State<MessageBubble> with SingleTickerProviderStateMixin{
- late AnimationController _animationController;
+class _MessageBubbleState extends State<MessageBubble>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
   @override
   void initState() {
     super.initState();
@@ -50,20 +50,20 @@ class _MessageBubbleState extends State<MessageBubble> with SingleTickerProvider
 
   @override
   Widget build(BuildContext context) {
-   bool isSelected = widget.selectedMessageId == widget.messageId;
+    bool isSelected = widget.selectedMessageId == widget.messageId;
     return Align(
         alignment: widget.isMe ? Alignment.centerRight : Alignment.centerLeft,
         child: GestureDetector(
           onHorizontalDragUpdate: (details) {
-          _animationController.value +=
-              details.primaryDelta! / 100 * (widget.isMe ? -1 : 1);
-        },
-        onHorizontalDragEnd: (details) {
-          if (_animationController.value.abs() > 0.5) {
-            widget.onReply(widget.message, widget.messageId);
-          }
-          _animationController.reverse();
-        },
+            _animationController.value +=
+                details.primaryDelta! / 100 * (widget.isMe ? -1 : 1);
+          },
+          onHorizontalDragEnd: (details) {
+            if (_animationController.value.abs() > 0.5) {
+              widget.onReply(widget.message, widget.messageId);
+            }
+            _animationController.reverse();
+          },
           onLongPress: () {
             // Select the message
             widget.onSelectMessage(widget.messageId);
@@ -75,16 +75,20 @@ class _MessageBubbleState extends State<MessageBubble> with SingleTickerProvider
             }
           },
           child: AnimatedBuilder(
-             animation: _animationController,
+            animation: _animationController,
             builder: (context, child) {
               return Transform.translate(
-                offset: Offset(50 * _animationController.value * (widget.isMe ? -1 : 1), 0),
+                offset: Offset(
+                    50 * _animationController.value * (widget.isMe ? -1 : 1),
+                    0),
                 child: Stack(
                   children: [
                     child!,
                     Positioned(
-                    left: widget.isMe ? null : 10 * _animationController.value,
-                    right: widget.isMe ? 10 * _animationController.value : null,
+                      left:
+                          widget.isMe ? null : 10 * _animationController.value,
+                      right:
+                          widget.isMe ? 10 * _animationController.value : null,
                       top: 0,
                       bottom: 0,
                       child: Center(
@@ -105,27 +109,27 @@ class _MessageBubbleState extends State<MessageBubble> with SingleTickerProvider
               padding:
                   const EdgeInsets.symmetric(horizontal: 12.0, vertical: 8.0),
               constraints: BoxConstraints(
-              maxWidth: MediaQuery.of(context).size.width * 0.7,
-            ),
+                maxWidth: MediaQuery.of(context).size.width * 0.7,
+              ),
               decoration: BoxDecoration(
-              color: isSelected
+                color: isSelected
                     ? const Color.fromARGB(255, 181, 238, 243).withOpacity(0.5)
                     : (widget.isMe ? const Color(0xFFDCF8C6) : Colors.white),
-              borderRadius: BorderRadius.only(
-                topLeft: const Radius.circular(16.0),
-                topRight: const Radius.circular(16.0),
-                bottomLeft: Radius.circular(widget.isMe ? 16.0 : 0.0),
-                bottomRight: Radius.circular(widget.isMe ? 0.0 : 16.0),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.1),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: const Offset(0, 3),
+                borderRadius: BorderRadius.only(
+                  topLeft: const Radius.circular(16.0),
+                  topRight: const Radius.circular(16.0),
+                  bottomLeft: Radius.circular(widget.isMe ? 16.0 : 0.0),
+                  bottomRight: Radius.circular(widget.isMe ? 0.0 : 16.0),
                 ),
-              ],
-            ),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 1,
+                    blurRadius: 4,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -150,7 +154,11 @@ class _MessageBubbleState extends State<MessageBubble> with SingleTickerProvider
                             )),
                       ),
                     ),
-                  Text(widget.message, style: const TextStyle(fontSize: 16.0,color: Colors.black87,)),
+                  Text(widget.message,
+                      style: const TextStyle(
+                        fontSize: 16.0,
+                        color: Colors.black87,
+                      )),
                   Text(formatTimestamp(widget.timestamp),
                       style:
                           TextStyle(fontSize: 10.0, color: Colors.grey[600])),

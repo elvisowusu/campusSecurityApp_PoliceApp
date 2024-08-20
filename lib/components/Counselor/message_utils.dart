@@ -41,7 +41,8 @@ void scrollToMessage(String messageId) {
   // Logic to scroll to the message with the given ID
 }
 
-void markMessagesAsRead(CollectionReference messagesCollection, String studentId) async {
+void markMessagesAsRead(
+    CollectionReference messagesCollection, String studentId) async {
   QuerySnapshot unreadMessages = await messagesCollection
       .where('senderId', isEqualTo: studentId)
       .where('read', isEqualTo: false)
@@ -70,8 +71,8 @@ void copyMessage(String message, BuildContext context) {
   );
 }
 
-void deleteMessage(String messageId, CollectionReference messagesCollection, Function() callback) async {
+void deleteMessage(String messageId, CollectionReference messagesCollection,
+    Function() callback) async {
   await messagesCollection.doc(messageId).delete();
   callback();
 }
-

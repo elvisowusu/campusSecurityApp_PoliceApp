@@ -16,7 +16,8 @@ class CounselorNotificationsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (currentUser == null) {
-      return const Scaffold(body: Center(child: Text('User not authenticated')));
+      return const Scaffold(
+          body: Center(child: Text('User not authenticated')));
     }
 
     return Scaffold(
@@ -78,10 +79,17 @@ class CounselorNotificationsPage extends StatelessWidget {
                   }
 
                   var latestMessage = messageSnapshot.data!.docs.isNotEmpty
-                      ? messageSnapshot.data!.docs.first.data() as Map<String, dynamic>
-                      : {'content': 'No messages yet', 'timestamp': Timestamp.now(), 'senderId': null};
+                      ? messageSnapshot.data!.docs.first.data()
+                          as Map<String, dynamic>
+                      : {
+                          'content': 'No messages yet',
+                          'timestamp': Timestamp.now(),
+                          'senderId': null
+                        };
 
-                  var sender = latestMessage['senderId'] == currentUser!.uid ? 'You: ' : 'Stu: ';
+                  var sender = latestMessage['senderId'] == currentUser!.uid
+                      ? 'You: '
+                      : 'Stu: ';
                   var messageContent = '$sender${latestMessage['content']}';
 
                   var timestamp = latestMessage['timestamp'] as Timestamp;
@@ -89,19 +97,24 @@ class CounselorNotificationsPage extends StatelessWidget {
 
                   var unreadCount = messageSnapshot.data!.docs.where((doc) {
                     var data = doc.data() as Map<String, dynamic>;
-                    return data['read'] == false && data['senderId'] != currentUser!.uid;
+                    return data['read'] == false &&
+                        data['senderId'] != currentUser!.uid;
                   }).length;
 
                   return FutureBuilder<DocumentSnapshot>(
-                    future: _firestore.collection('students').doc(studentId).get(),
+                    future:
+                        _firestore.collection('students').doc(studentId).get(),
                     builder: (context, studentSnapshot) {
                       if (!studentSnapshot.hasData) {
-                        return const ListTile(title: Text('Loading student data...'));
+                        return const ListTile(
+                            title: Text('Loading student data...'));
                       }
 
-                      var studentData = studentSnapshot.data!.data() as Map<String, dynamic>;
+                      var studentData =
+                          studentSnapshot.data!.data() as Map<String, dynamic>;
                       var studentName = studentData['fullName'] ?? 'Unknown';
-                      var referenceNumber = studentData['Reference number'] ?? '';
+                      var referenceNumber =
+                          studentData['Reference number'] ?? '';
 
                       return Column(
                         children: [
@@ -109,34 +122,36 @@ class CounselorNotificationsPage extends StatelessWidget {
                             leading: CircleAvatar(
                               // Add a placeholder image or profile picture here
                               backgroundColor: Colors.grey,
-                              child: Text(studentName[0]), // Example: First letter of the student's name
+                              child: Text(studentName[
+                                  0]), // Example: First letter of the student's name
                             ),
                             title: Text('$studentName - $referenceNumber'),
                             subtitle: Text(
                               messageContent,
                               style: messageContent.startsWith('Stu: ')
-                              ?const TextStyle(
-                                color: Colors.black54,
-                                fontWeight:FontWeight.bold
-                              )
-                              :const TextStyle(
-                                color: Colors.black45,
-                                fontWeight:FontWeight.normal
-                              ),
+                                  ? const TextStyle(
+                                      color: Colors.black54,
+                                      fontWeight: FontWeight.bold)
+                                  : const TextStyle(
+                                      color: Colors.black45,
+                                      fontWeight: FontWeight.normal),
                               overflow: TextOverflow.ellipsis,
                             ),
                             trailing: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
-                                Text(time, style: const TextStyle(color: Colors.green)),
+                                Text(time,
+                                    style:
+                                        const TextStyle(color: Colors.green)),
                                 if (unreadCount > 0)
                                   CircleAvatar(
                                     backgroundColor: Colors.green,
                                     radius: 12,
                                     child: Text(
                                       unreadCount.toString(),
-                                      style: const TextStyle(color: Colors.white, fontSize: 12),
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 12),
                                     ),
                                   ),
                               ],
@@ -149,7 +164,8 @@ class CounselorNotificationsPage extends StatelessWidget {
                                   .collection('chats')
                                   .doc(studentId)
                                   .collection('messages')
-                                  .where('senderId', isNotEqualTo: currentUser!.uid)
+                                  .where('senderId',
+                                      isNotEqualTo: currentUser!.uid)
                                   .get()
                                   .then((querySnapshot) {
                                 for (var doc in querySnapshot.docs) {
@@ -160,7 +176,8 @@ class CounselorNotificationsPage extends StatelessWidget {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) => CounselorStudentPrivateChatPage(
+                                  builder: (context) =>
+                                      CounselorStudentPrivateChatPage(
                                     studentId: studentId,
                                   ),
                                 ),

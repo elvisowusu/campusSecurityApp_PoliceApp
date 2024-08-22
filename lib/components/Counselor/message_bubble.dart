@@ -12,6 +12,7 @@ class MessageBubble extends StatefulWidget {
   final String? selectedMessageId;
   final Function(String) onSelectMessage;
   final Function(String, String) onReply;
+  final Function(String)? onScrollToMessage;
 
   const MessageBubble({
     super.key,
@@ -24,6 +25,7 @@ class MessageBubble extends StatefulWidget {
     this.selectedMessageId,
     required this.onSelectMessage,
     required this.onReply,
+    this.onScrollToMessage,
   });
 
   @override
@@ -135,11 +137,11 @@ class _MessageBubbleState extends State<MessageBubble>
                 children: [
                   if (widget.replyingToMessage != null)
                     GestureDetector(
-                      onTap: () {
-                        if (widget.replyingToMessageId != null) {
-                          scrollToMessage(widget.replyingToMessageId!);
-                        }
-                      },
+                        onTap: () {
+    if (widget.replyingToMessageId != null && widget.onScrollToMessage != null) {
+      widget.onScrollToMessage!(widget.replyingToMessageId!);
+    }
+  },
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 5.0),
                         padding: const EdgeInsets.all(5.0),

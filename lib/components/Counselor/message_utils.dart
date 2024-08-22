@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/services.dart';
-
+GlobalKey<AnimatedListState> listKey = GlobalKey<AnimatedListState>();
 void sendMessage(
   String content,
   CollectionReference messagesCollection,
@@ -37,8 +37,26 @@ void scrollToBottom(ScrollController scrollController) {
   }
 }
 
-void scrollToMessage(String messageId) {
-  // Logic to scroll to the message with the given ID
+void scrollToMessage(String messageId, CollectionReference messagesCollection, ScrollController scrollController) {
+  WidgetsBinding.instance.addPostFrameCallback((_) async {
+    // Query the messages collection to find the message
+    QuerySnapshot querySnapshot = await messagesCollection.orderBy('timestamp', descending: true).get();
+    
+    int messageIndex = querySnapshot.docs.indexWhere((doc) => doc.id == messageId);
+    
+    if (messageIndex != -1 && scrollController.hasClients) {
+      // Calculate the position to scroll to
+      double itemHeight = 70.0; // Estimate the height of each message item
+      double targetPosition = messageIndex * itemHeight;
+
+      // Scroll to the position
+      scrollController.animateTo(
+        targetPosition,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeOut,
+      );
+    }
+  });
 }
 
 void markMessagesAsRead(

@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'live_location_service.dart';
+import 'package:collection/collection.dart';
 
 class MapArea extends StatefulWidget {
   final HelpRequest helpRequest;
   final String policeOfficerId;
-  const MapArea({super.key, required this.helpRequest, required this.policeOfficerId});
+  const MapArea(
+      {super.key, required this.helpRequest, required this.policeOfficerId});
 
   @override
   State<MapArea> createState() => _MapAreaState();
@@ -25,69 +27,83 @@ class _MapAreaState extends State<MapArea> {
   void initState() {
     super.initState();
     _setupLocationStreams();
+    _liveLocationService.startPeriodicLocationUpdates(widget.policeOfficerId);
+
+    // Adding initial markers
+    _markers.add(Marker(
+      markerId: const MarkerId('student'),
+      position: widget.helpRequest.initialLocation,
+      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+      infoWindow: InfoWindow(title: widget.helpRequest.studentName),
+    ));
+
+    _liveLocationService.getCurrentPosition().then((position) {
+      _updateMarkers(LatLng(position.latitude, position.longitude),
+          isStudent: false);
+    });
   }
 
- void _setupLocationStreams() {
-  // Student location stream
-  _studentLocationSubscription = _liveLocationService
-      .getHelpRequestUpdates(widget.helpRequest.trackingId)
-      .listen((updatedHelpRequest) {
-    _updateMarkers(updatedHelpRequest.currentLocation!, isStudent: true);
-  });
+  void _setupLocationStreams() {
+    // Student location stream
+    _studentLocationSubscription = _liveLocationService
+        .getHelpRequestUpdates(widget.helpRequest.trackingId)
+        .listen((updatedHelpRequest) {
+      _updateMarkers(updatedHelpRequest.currentLocation!, isStudent: true);
+    });
 
-  // Police officer location stream
-  _policeLocationSubscription = _liveLocationService
-      .getPoliceOfficerLocation(widget.policeOfficerId)
-      .listen((policeLocation) {
-    _updateMarkers(policeLocation, isStudent: false);
-  });
-}
+    // Police officer location stream
+    _policeLocationSubscription = _liveLocationService
+        .getPoliceOfficerLocation(widget.policeOfficerId)
+        .listen((policeLocation) {
+      _updateMarkers(policeLocation, isStudent: false);
+    });
+  }
 
-void _updateMarkers(LatLng location, {required bool isStudent}) {
-  setState(() {
-    if (isStudent) {
-      // Update student marker
-      _markers.removeWhere((marker) => marker.markerId.value == 'student');
-      _markers.add(Marker(
-        markerId: const MarkerId('student'),
-        position: location,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-        infoWindow: InfoWindow(title: widget.helpRequest.studentName),
-      ));
-    } else {
-      // Update police officer marker
-      _markers.removeWhere((marker) => marker.markerId.value == 'police');
-      _markers.add(Marker(
-        markerId: const MarkerId('police'),
-        position: location,
-        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-        infoWindow: const InfoWindow(title: 'Police Officer'),
-      ));
-    }
+  void _updateMarkers(LatLng location, {required bool isStudent}) {
+    setState(() {
+      if (isStudent) {
+        // Update student marker
+        _markers.removeWhere((marker) => marker.markerId.value == 'student');
+        _markers.add(Marker(
+          markerId: const MarkerId('student'),
+          position: location,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+          infoWindow: InfoWindow(title: widget.helpRequest.studentName),
+        ));
+      } else {
+        // Update police officer marker
+        _markers.removeWhere((marker) => marker.markerId.value == 'police');
+        _markers.add(Marker(
+          markerId: const MarkerId('police'),
+          position: location,
+          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+          infoWindow: const InfoWindow(title: 'Police Officer'),
+        ));
+      }
 
-    _updatePolyline();
-    _updateCameraPosition();
-  });
-}
+      _updatePolyline();
+      _updateCameraPosition();
+    });
+  }
 
   void _updatePolyline() {
-    final studentMarker = _markers.firstWhere(
+    final studentMarker = _markers.firstWhereOrNull(
       (marker) => marker.markerId.value == 'student',
-      orElse: () => null as Marker,
     );
-    final policeMarker = _markers.firstWhere(
+    final policeMarker = _markers.firstWhereOrNull(
       (marker) => marker.markerId.value == 'police',
-      orElse: () => null as Marker,
     );
 
-    _polylines.clear();
-    _polylines.add(Polyline(
-      polylineId: const PolylineId('student_to_police'),
-      color: Colors.green,
-      width: 5,
-      points: [studentMarker.position, policeMarker.position],
-    ));
+    if (studentMarker != null && policeMarker != null) {
+      _polylines.clear();
+      _polylines.add(Polyline(
+        polylineId: const PolylineId('student_to_police'),
+        color: Colors.green,
+        width: 5,
+        points: [studentMarker.position, policeMarker.position],
+      ));
     }
+  }
 
   Future<void> _updateCameraPosition() async {
     if (_markers.length < 2) return;

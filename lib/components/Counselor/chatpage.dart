@@ -182,6 +182,7 @@ class _CounselorStudentPrivateChatPageState
                             onSelectMessage: (id) =>
                                 setState(() => _selectedMessageId = id),
                             onReply: _handleReply,
+                            onScrollToMessage: (String messageId) => scrollToMessage(messageId, _scrollController),
                           );
                         },
                       );

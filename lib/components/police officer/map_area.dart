@@ -159,6 +159,12 @@ class _MapAreaState extends State<MapArea> {
         },
         markers: _markers,
         polylines: _polylines,
+        cameraTargetBounds: CameraTargetBounds.unbounded,
+        rotateGesturesEnabled: false,
+        tiltGesturesEnabled: false,
+        zoomControlsEnabled: false,
+        myLocationEnabled: true,
+        myLocationButtonEnabled: false,
       ),
     );
   }

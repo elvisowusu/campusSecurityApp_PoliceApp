@@ -104,7 +104,7 @@ class LiveLocationService {
   }
 
   // New method to start periodic location updates
-  void startPeriodicLocationUpdates(String officerId, {Duration interval = const Duration(seconds: 10)}) {
+  void startPeriodicLocationUpdates(String officerId, {Duration interval = const Duration(seconds: 3)}) {
     Stream.periodic(interval).listen((_) async {
       try {
         Position position = await getCurrentPosition();
@@ -114,6 +114,12 @@ class LiveLocationService {
       }
     });
   }
+  Future<void> updateStudentLocation(String studentId, Position position) async {
+  await _firestore.collection('help_requests').doc(studentId).update({
+    'currentLocation': GeoPoint(position.latitude, position.longitude),
+    'lastUpdated': FieldValue.serverTimestamp(),
+  });
+}
 
   // New method to update help request status
   Future<void> updateHelpRequestStatus(String trackingId, String status) async {

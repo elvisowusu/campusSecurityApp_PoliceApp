@@ -70,17 +70,27 @@ class HomeDecider extends StatelessWidget {
     return FutureBuilder<Widget>(
       future: getInitialScreen(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const CircularProgressIndicator();
-        }
-        if (snapshot.hasError) {
-          return const Center(child: Text('Error loading user data'));
-        }
-        if (snapshot.hasData) {
-          return snapshot.data!;
-        }
-        return const SplashScreen(); // Default case
+        return AnimatedSwitcher(
+          duration: const Duration(milliseconds: 500),
+          transitionBuilder: (Widget child, Animation<double> animation) {
+            return FadeTransition(opacity: animation, child: child);
+          },
+          child: _buildWidgetFromSnapshot(snapshot),
+        );
       },
     );
+  }
+
+  Widget _buildWidgetFromSnapshot(AsyncSnapshot<Widget> snapshot) {
+    if (snapshot.connectionState == ConnectionState.waiting) {
+      return const SizedBox.shrink(); // Invisible placeholder during loading
+    }
+    if (snapshot.hasError) {
+      return const Center(child: Text('Error loading user data'));
+    }
+    if (snapshot.hasData) {
+      return snapshot.data!;
+    }
+    return const SplashScreen(); // Default case
   }
 }

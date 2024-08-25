@@ -12,7 +12,17 @@ class LiveLocationService {
         .snapshots()
         .map((snapshot) {
       final data = snapshot.data() as Map<String, dynamic>;
-      return LatLng(data['location'].latitude, data['location'].longitude);
+      return LatLng(
+        (data['location'] as GeoPoint).latitude,
+        (data['location'] as GeoPoint).longitude,
+      );
+    });
+  }
+
+  Future<void> updateHelpRequestReadStatus(
+      String trackingId, bool isRead) async {
+    await _firestore.collection('help_requests').doc(trackingId).update({
+      'isRead': isRead,
     });
   }
 
@@ -23,23 +33,33 @@ class LiveLocationService {
         .snapshots()
         .map((snapshot) {
       return snapshot.docs.map((doc) {
-        return HelpRequest(
-          studentUid: doc['studentUid'],
-          studentName: doc['studentName'],
-          referenceNumber: doc['referenceNumber'],
-          initialLocation: LatLng(
-            doc['initialLocation'].latitude,
-            doc['initialLocation'].longitude,
-          ),
-          currentLocation: doc['currentLocation'] != null
-              ? LatLng(
-                  doc['currentLocation'].latitude,
-                  doc['currentLocation'].longitude,
-                )
-              : null,
-          timestamp: (doc['timestamp'] as Timestamp).toDate(),
-          trackingId: doc['trackingId'],
-        );
+        try {
+          final data = doc.data();
+          final initialLocation = data['initialLocation'] as GeoPoint;
+          final currentLocation = data['currentLocation'] as GeoPoint?;
+
+          return HelpRequest(
+            studentUid: data['studentUid'] as String,
+            studentName: data['studentName'] as String,
+            referenceNumber: data['referenceNumber'] as String,
+            initialLocation: LatLng(
+              initialLocation.latitude,
+              initialLocation.longitude,
+            ),
+            currentLocation: currentLocation != null
+                ? LatLng(
+                    currentLocation.latitude,
+                    currentLocation.longitude,
+                  )
+                : null,
+            timestamp: (data['timestamp'] as Timestamp).toDate(),
+            trackingId: data['trackingId'] as String,
+            isRead: data['isRead'] ?? false, // Default value if not present
+          );
+        } catch (e) {
+          print("Error parsing HelpRequest: $e");
+          rethrow; // Rethrow or handle error as needed
+        }
       }).toList();
     });
   }
@@ -51,35 +71,38 @@ class LiveLocationService {
         .snapshots()
         .map((doc) {
       final data = doc.data() as Map<String, dynamic>;
+      final initialLocation = data['initialLocation'] as GeoPoint;
+      final currentLocation = data['currentLocation'] as GeoPoint?;
+
       return HelpRequest(
-        studentUid: data['studentUid'],
-        studentName: data['studentName'],
-        referenceNumber: data['referenceNumber'],
+        studentUid: data['studentUid'] as String,
+        studentName: data['studentName'] as String,
+        referenceNumber: data['referenceNumber'] as String,
         initialLocation: LatLng(
-          data['initialLocation'].latitude,
-          data['initialLocation'].longitude,
+          initialLocation.latitude,
+          initialLocation.longitude,
         ),
-        currentLocation: data['currentLocation'] != null
+        currentLocation: currentLocation != null
             ? LatLng(
-                data['currentLocation'].latitude,
-                data['currentLocation'].longitude,
+                currentLocation.latitude,
+                currentLocation.longitude,
               )
             : null,
         timestamp: (data['timestamp'] as Timestamp).toDate(),
-        trackingId: data['trackingId'],
+        trackingId: data['trackingId'] as String,
+        isRead: data['isRead'] ?? false, // Default value if not present
       );
     });
   }
 
-  // New method to update police officer location
-  Future<void> updatePoliceOfficerLocation(String officerId, Position position) async {
+  Future<void> updatePoliceOfficerLocation(
+      String officerId, Position position) async {
     await _firestore.collection('police_officers').doc(officerId).update({
       'location': GeoPoint(position.latitude, position.longitude),
       'lastUpdated': FieldValue.serverTimestamp(),
     });
   }
 
-  // New method to get current position
   Future<Position> getCurrentPosition() async {
     bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -103,8 +126,8 @@ class LiveLocationService {
     );
   }
 
-  // New method to start periodic location updates
-  void startPeriodicLocationUpdates(String officerId, {Duration interval = const Duration(seconds: 3)}) {
+  void startPeriodicLocationUpdates(String officerId,
+      {Duration interval = const Duration(seconds: 3)}) {
     Stream.periodic(interval).listen((_) async {
       try {
         Position position = await getCurrentPosition();
@@ -114,18 +137,23 @@ class LiveLocationService {
       }
     });
   }
-  Future<void> updateStudentLocation(String studentId, Position position) async {
-  await _firestore.collection('help_requests').doc(studentId).update({
-    'currentLocation': GeoPoint(position.latitude, position.longitude),
-    'lastUpdated': FieldValue.serverTimestamp(),
-  });
-}
 
-  // New method to update help request status
+  Future<void> updateStudentLocation(
+      String studentId, Position position) async {
+    await _firestore.collection('help_requests').doc(studentId).update({
+      'currentLocation': GeoPoint(position.latitude, position.longitude),
+      'lastUpdated': FieldValue.serverTimestamp(),
+    });
+  }
+
   Future<void> updateHelpRequestStatus(String trackingId, String status) async {
     await _firestore.collection('help_requests').doc(trackingId).update({
       'status': status,
     });
+  }
+
+  Future<void> deleteHelpRequest(String trackingId) async {
+    await _firestore.collection('help_requests').doc(trackingId).delete();
   }
 }
 
@@ -137,6 +165,7 @@ class HelpRequest {
   final LatLng? currentLocation;
   final DateTime timestamp;
   final String trackingId;
+  final bool isRead;
 
   HelpRequest({
     required this.studentUid,
@@ -146,5 +175,26 @@ class HelpRequest {
     this.currentLocation,
     required this.timestamp,
     required this.trackingId,
+    required this.isRead,
   });
+
+  factory HelpRequest.fromSnapshot(DocumentSnapshot snapshot) {
+    final data = snapshot.data() as Map<String, dynamic>;
+    final initialLocation = data['initialLocation'] as GeoPoint;
+    final currentLocation = data['currentLocation'] as GeoPoint?;
+
+    return HelpRequest(
+      studentUid: data['studentUid'] as String,
+      studentName: data['studentName'] as String,
+      referenceNumber: data['referenceNumber'] as String,
+      initialLocation:
+          LatLng(initialLocation.latitude, initialLocation.longitude),
+      currentLocation: currentLocation != null
+          ? LatLng(currentLocation.latitude, currentLocation.longitude)
+          : null,
+      timestamp: (data['timestamp'] as Timestamp).toDate(),
+      trackingId: data['trackingId'] as String,
+      isRead: data['isRead'] ?? false,
+    );
+  }
 }

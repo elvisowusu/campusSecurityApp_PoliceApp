@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:http/http.dart' as http;
 import 'live_location_service.dart';
-import 'package:collection/collection.dart';
 
 class MapArea extends StatefulWidget {
   final HelpRequest helpRequest;
   final String policeOfficerId;
+
   const MapArea(
       {super.key, required this.helpRequest, required this.policeOfficerId});
 
@@ -22,90 +25,162 @@ class _MapAreaState extends State<MapArea> {
   late StreamSubscription _policeLocationSubscription;
   final Set<Marker> _markers = {};
   final Set<Polyline> _polylines = {};
+  int? _estimatedArrivalTime;
 
   @override
   void initState() {
     super.initState();
     _setupLocationStreams();
     _liveLocationService.startPeriodicLocationUpdates(widget.policeOfficerId);
-
-    // Adding initial markers
-    _markers.add(Marker(
-      markerId: const MarkerId('student'),
-      position: widget.helpRequest.initialLocation,
-      icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-      infoWindow: InfoWindow(title: widget.helpRequest.studentName),
-    ));
-
-    _liveLocationService.getCurrentPosition().then((position) {
-      _updateMarkers(LatLng(position.latitude, position.longitude),
-          isStudent: false);
-    });
   }
 
   void _setupLocationStreams() {
-    // Student location stream
     _studentLocationSubscription = _liveLocationService
         .getHelpRequestUpdates(widget.helpRequest.trackingId)
-        .listen((updatedHelpRequest) {
-      _updateMarkers(updatedHelpRequest.currentLocation!, isStudent: true);
-    });
+        .listen(_updateStudentMarker);
 
-    // Police officer location stream
     _policeLocationSubscription = _liveLocationService
         .getPoliceOfficerLocation(widget.policeOfficerId)
-        .listen((policeLocation) {
-      _updateMarkers(policeLocation, isStudent: false);
-    });
+        .listen(_updatePoliceMarker);
   }
 
-  void _updateMarkers(LatLng location, {required bool isStudent}) {
+  void _updateStudentMarker(HelpRequest updatedHelpRequest) {
     setState(() {
-      if (isStudent) {
-        // Update student marker
-        _markers.removeWhere((marker) => marker.markerId.value == 'student');
-        _markers.add(Marker(
-          markerId: const MarkerId('student'),
-          position: location,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
-          infoWindow: InfoWindow(title: widget.helpRequest.studentName),
-        ));
-      } else {
-        // Update police officer marker
-        _markers.removeWhere((marker) => marker.markerId.value == 'police');
-        _markers.add(Marker(
-          markerId: const MarkerId('police'),
-          position: location,
-          icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
-          infoWindow: const InfoWindow(title: 'Police Officer'),
-        ));
-      }
-
-      _updatePolyline();
-      _updateCameraPosition();
+      _markers.removeWhere((marker) => marker.markerId.value == 'student');
+      _markers.add(Marker(
+        markerId: const MarkerId('student'),
+        position: updatedHelpRequest.currentLocation ??
+            updatedHelpRequest.initialLocation,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueRed),
+        infoWindow: InfoWindow(title: updatedHelpRequest.studentName),
+      ));
+      _updatePolylineAndCamera();
     });
   }
 
-  void _updatePolyline() {
-    final studentMarker = _markers.firstWhereOrNull(
+  void _updatePoliceMarker(LatLng policeLocation) {
+    setState(() {
+      _markers.removeWhere((marker) => marker.markerId.value == 'police');
+      _markers.add(Marker(
+        markerId: const MarkerId('police'),
+        position: policeLocation,
+        icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueBlue),
+        infoWindow: const InfoWindow(title: 'Police Officer'),
+      ));
+      _updatePolylineAndCamera();
+    });
+  }
+
+  Future<void> _updatePolylineAndCamera() async {
+    final studentMarker = _markers.firstWhere(
       (marker) => marker.markerId.value == 'student',
+      orElse: () =>
+          const Marker(markerId: MarkerId('student'), position: LatLng(0, 0)),
     );
-    final policeMarker = _markers.firstWhereOrNull(
+    final policeMarker = _markers.firstWhere(
       (marker) => marker.markerId.value == 'police',
+      orElse: () =>
+          const Marker(markerId: MarkerId('police'), position: LatLng(0, 0)),
     );
 
-    if (studentMarker != null && policeMarker != null) {
-      _polylines.clear();
-      _polylines.add(Polyline(
-        polylineId: const PolylineId('student_to_police'),
-        color: Colors.green,
-        width: 5,
-        points: [studentMarker.position, policeMarker.position],
-      ));
+    if (studentMarker.position.latitude == 0 ||
+        policeMarker.position.latitude == 0) return;
+
+    final routePoints = await _getRouteBetweenLocations(
+      studentMarker.position,
+      policeMarker.position,
+    );
+
+    if (routePoints.isNotEmpty) {
+      setState(() {
+        _polylines.clear();
+        _polylines.add(Polyline(
+          polylineId: const PolylineId('student_to_police'),
+          color: Colors.blue,
+          width: 5,
+          points: routePoints,
+        ));
+      });
+
+      _updateEstimatedArrivalTime(
+          studentMarker.position, policeMarker.position);
+      _animateToShowBothMarkers();
     }
   }
 
-  Future<void> _updateCameraPosition() async {
+  Future<List<LatLng>> _getRouteBetweenLocations(
+      LatLng start, LatLng end) async {
+    const apiKey = 'AIzaSyA9rrWyEgPUPc0LOkbLG6xiHY4S-AuoJs0';
+    final url = Uri.parse(
+      'https://maps.googleapis.com/maps/api/directions/json?origin=${start.latitude},${start.longitude}&destination=${end.latitude},${end.longitude}&key=$apiKey',
+    );
+
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      final routes = data['routes'] as List<dynamic>;
+      if (routes.isNotEmpty) {
+        final points = routes[0]['overview_polyline']['points'] as String;
+        return _decodePolyline(points);
+      }
+    }
+
+    return [];
+  }
+
+  List<LatLng> _decodePolyline(String encoded) {
+    List<LatLng> polyline = [];
+    int index = 0;
+    int len = encoded.length;
+    int lat = 0;
+    int lng = 0;
+
+    while (index < len) {
+      int b;
+      int shift = 0;
+      int result = 0;
+
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+
+      int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      lat += dlat;
+      shift = 0;
+      result = 0;
+
+      do {
+        b = encoded.codeUnitAt(index++) - 63;
+        result |= (b & 0x1f) << shift;
+        shift += 5;
+      } while (b >= 0x20);
+
+      int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
+      lng += dlng;
+
+      polyline.add(LatLng(
+        (lat / 1E5),
+        (lng / 1E5),
+      ));
+    }
+
+    return polyline;
+  }
+
+  void _updateEstimatedArrivalTime(LatLng start, LatLng end) {
+    double distanceInMeters = Geolocator.distanceBetween(
+        start.latitude, start.longitude, end.latitude, end.longitude);
+    int estimatedMinutes =
+        (distanceInMeters / 833.33).round(); // Assuming 50 km/h speed
+    setState(() {
+      _estimatedArrivalTime = estimatedMinutes;
+    });
+  }
+
+  Future<void> _animateToShowBothMarkers() async {
     if (_markers.length < 2) return;
 
     final GoogleMapController controller = await _controller.future;
@@ -114,24 +189,15 @@ class _MapAreaState extends State<MapArea> {
   }
 
   LatLngBounds _calculateBounds(Set<Marker> markers) {
-    double? minLat, maxLat, minLng, maxLng;
-    for (final marker in markers) {
-      if (minLat == null || marker.position.latitude < minLat) {
-        minLat = marker.position.latitude;
-      }
-      if (maxLat == null || marker.position.latitude > maxLat) {
-        maxLat = marker.position.latitude;
-      }
-      if (minLng == null || marker.position.longitude < minLng) {
-        minLng = marker.position.longitude;
-      }
-      if (maxLng == null || marker.position.longitude > maxLng) {
-        maxLng = marker.position.longitude;
-      }
-    }
     return LatLngBounds(
-      southwest: LatLng(minLat!, minLng!),
-      northeast: LatLng(maxLat!, maxLng!),
+      southwest: LatLng(
+        markers.map((m) => m.position.latitude).reduce(min),
+        markers.map((m) => m.position.longitude).reduce(min),
+      ),
+      northeast: LatLng(
+        markers.map((m) => m.position.latitude).reduce(max),
+        markers.map((m) => m.position.longitude).reduce(max),
+      ),
     );
   }
 
@@ -148,36 +214,34 @@ class _MapAreaState extends State<MapArea> {
       appBar: AppBar(
         title: Text('Tracking ${widget.helpRequest.studentName}'),
       ),
-      body: GoogleMap(
-        mapType: MapType.normal,
-        initialCameraPosition: CameraPosition(
-          target: widget.helpRequest.initialLocation,
-          zoom: 15,
-        ),
-        onMapCreated: (GoogleMapController controller) {
-          _controller.complete(controller);
-        },
-        markers: _markers,
-        polylines: _polylines,
-        cameraTargetBounds: CameraTargetBounds.unbounded,
-        rotateGesturesEnabled: false,
-        tiltGesturesEnabled: false,
-        zoomControlsEnabled: false,
-        myLocationEnabled: true,
-        myLocationButtonEnabled: false,
+      body: Stack(
+        children: [
+          GoogleMap(
+            mapType: MapType.normal,
+            initialCameraPosition: CameraPosition(
+              target: widget.helpRequest.initialLocation,
+              zoom: 15,
+            ),
+            onMapCreated: (GoogleMapController controller) {
+              _controller.complete(controller);
+            },
+            markers: _markers,
+            polylines: _polylines,
+            myLocationEnabled: true,
+            myLocationButtonEnabled: false,
+          ),
+          if (_estimatedArrivalTime != null)
+            Positioned(
+              bottom: 16,
+              left: 16,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                color: Colors.white,
+                child: Text('ETA: $_estimatedArrivalTime min'),
+              ),
+            ),
+        ],
       ),
     );
   }
-}
-
-// Add this method to the LiveLocationService class
-Stream<LatLng> getPoliceOfficerLocation(String officerId) {
-  return FirebaseFirestore.instance
-      .collection('police_officers')
-      .doc(officerId)
-      .snapshots()
-      .map((snapshot) {
-    final data = snapshot.data() as Map<String, dynamic>;
-    return LatLng(data['location'].latitude, data['location'].longitude);
-  });
 }

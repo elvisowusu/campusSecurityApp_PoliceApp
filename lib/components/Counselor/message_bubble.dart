@@ -137,11 +137,13 @@ class _MessageBubbleState extends State<MessageBubble>
                 children: [
                   if (widget.replyingToMessage != null)
                     GestureDetector(
-                        onTap: () {
-    if (widget.replyingToMessageId != null && widget.onScrollToMessage != null) {
-      widget.onScrollToMessage!(widget.replyingToMessageId!);
-    }
-  },
+                      onTap: () {
+                        if (widget.replyingToMessageId != null &&
+                            widget.onScrollToMessage != null) {
+                          widget
+                              .onScrollToMessage!(widget.replyingToMessageId!);
+                        }
+                      },
                       child: Container(
                         margin: const EdgeInsets.only(bottom: 5.0),
                         padding: const EdgeInsets.all(5.0),

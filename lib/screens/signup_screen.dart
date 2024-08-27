@@ -1,12 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cs_location_tracker_app/firebase_authentication/firebase_auth_services.dart';
-import 'package:cs_location_tracker_app/screens/signin_screen.dart';
-import 'package:cs_location_tracker_app/theme/theme.dart';
-import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
+import 'package:security_app/firebase_authentication/firebase_auth_services.dart';
+import 'package:security_app/home_decider.dart';
+import 'package:security_app/screens/signin_screen.dart';
+import 'package:security_app/theme/theme.dart';
+import 'package:security_app/widgets/custom_scaffold.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+
+import '../services/user_session.dart';
 
 class SignUpScreen extends StatefulWidget {
   final String role;
@@ -417,14 +420,22 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       if (user != null) {
-        await FirebaseFirestore.instance.collection(widget.role).doc(user.uid).set({
+        await FirebaseFirestore.instance
+            .collection(widget.role)
+            .doc(user.uid)
+            .set({
           'fullName': fullName,
           'email': email,
           'createdAt': FieldValue.serverTimestamp(),
         });
         Fluttertoast.showToast(msg: "Sign up successful");
+        // Save policeOfficerId to local session
+        if (widget.role == 'police_officers') {
+          // Save policeOfficerId to local session
+          await UserSession.savePoliceOfficerId(user.uid);
+        }
         Navigator.push(
-            context, MaterialPageRoute(builder: (e) => const SignInScreen()));
+            context, MaterialPageRoute(builder: (e) => const HomeDecider()));
       } else {
         Fluttertoast.showToast(msg: "Some error happened");
       }
@@ -447,7 +458,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
 
   // Sign up with Google
   void _signUpWithGoogle() async {
-
     setState(() {
       _isSigningUpWithGoogle = true;
     });
@@ -468,7 +478,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
           Fluttertoast.showToast(msg: "Google account already exists!");
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (e) => const SignInScreen()),
+            MaterialPageRoute(builder: (e) => const HomeDecider()),
           );
         } else {
           // Add user to the database
@@ -480,13 +490,18 @@ class _SignUpScreenState extends State<SignUpScreen> {
             'email': user.email,
             'createdAt': FieldValue.serverTimestamp(),
           });
+          // Save policeOfficerId to local session
+        if (widget.role == 'police_officers') {
+          // Save policeOfficerId to local session
+          await UserSession.savePoliceOfficerId(user.uid);
+        }
           Fluttertoast.showToast(msg: "Sign up successful");
           setState(() {
             _isSigningUpWithGoogle = false;
           });
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (e) => const SignInScreen()),
+            MaterialPageRoute(builder: (e) => const HomeDecider()),
           );
         }
       } else {

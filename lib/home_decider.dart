@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:cs_location_tracker_app/components/Counselor/notifications.dart';
-import 'package:cs_location_tracker_app/components/police%20officer/emergency_notification.dart';
-import 'package:cs_location_tracker_app/screens/splash_screen.dart';
+import 'package:security_app/components/Counselor/notifications.dart';
+import 'package:security_app/components/police%20officer/emergency_notification.dart';
+import 'package:security_app/screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 

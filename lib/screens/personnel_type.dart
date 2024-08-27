@@ -1,6 +1,6 @@
-import 'package:cs_location_tracker_app/screens/signup_screen.dart';
+import 'package:security_app/screens/signup_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:cs_location_tracker_app/widgets/custom_scaffold.dart';
+import 'package:security_app/widgets/custom_scaffold.dart';
 import 'dart:ui'; // Needed for the BackdropFilter and ImageFilter
 
 class RoleSelectionScreen extends StatelessWidget {

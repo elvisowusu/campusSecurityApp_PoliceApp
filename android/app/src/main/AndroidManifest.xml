@@ -7,7 +7,7 @@
 
     
     <application
-        android:label="cs_location_tracker_app"
+        android:label="security_app"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

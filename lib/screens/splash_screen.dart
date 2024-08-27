@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:cs_location_tracker_app/screens/welcome_screen.dart';
+import 'package:security_app/screens/welcome_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

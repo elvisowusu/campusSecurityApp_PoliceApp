@@ -1,8 +1,7 @@
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:security_app/firebase_options.dart';
-import 'package:security_app/screens/splash_screen.dart';
-import 'package:security_app/services/local_notification_services.dart';
-import 'package:security_app/theme/theme.dart';
+import 'package:cs_location_tracker_app/components/police%20officer/emergency_notification.dart';
+import 'package:cs_location_tracker_app/firebase_options.dart';
+import 'package:cs_location_tracker_app/screens/splash_screen.dart';
+import 'package:cs_location_tracker_app/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +18,11 @@ Future _firebaseBackgroundMessage(RemoteMessage message) async {
 }
 
 
+// Add this function to handle background messages
+Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  print("Handling a background message: ${message.messageId}");
+}
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   tz.initializeTimeZones();
@@ -48,6 +52,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey, 
       debugShowCheckedModeBanner: false,
       title: 'Flutter Demo',
       theme: lightMode,

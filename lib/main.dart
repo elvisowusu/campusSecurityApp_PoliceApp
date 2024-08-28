@@ -8,6 +8,7 @@ import 'package:security_app/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'components/police officer/dangerzones.dart';
 import 'home_decider.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'services/user_session.dart';
@@ -106,6 +107,7 @@ class _MyAppState extends State<MyApp> {
       routes: {
         "/emergency": (context) => EmergencyNotifications(
             policeOfficerId: policeOfficerId ?? 'unknown_officer'),
+        "/danger_zones": (context) => const DangerZoneMapPage(),
       },
     );
   }

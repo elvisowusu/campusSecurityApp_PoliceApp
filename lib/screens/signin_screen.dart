@@ -178,8 +178,8 @@ class _SignInScreenState extends State<SignInScreen> {
                               suffixIcon: IconButton(
                                 icon: Icon(
                                   _showPassword
-                                      ? Icons.visibility
-                                      : Icons.visibility_off,
+                                      ? Icons.visibility_off
+                                      : Icons.visibility,
                                   color: lightColorScheme.primary,
                                 ),
                                 onPressed: () {

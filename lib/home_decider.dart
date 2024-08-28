@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:security_app/components/Counselor/notifications.dart';
-import 'package:security_app/components/police%20officer/emergency_notification.dart';
+import 'package:security_app/components/police%20officer/police_screen.dart';
 import 'package:security_app/screens/splash_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -19,11 +19,11 @@ class HomeDecider extends StatelessWidget {
     bool isCounselor = await _checkUserRole(user.uid, 'counselors');
 
     if (isPoliceOfficer) {
-      return EmergencyNotifications(policeOfficerId: user.uid);
+      return const PoliceScreen();
     } else if (isCounselor) {
       return CounselorNotificationsPage();
     } else {
-      return const SplashScreen(); // Default to SplashScreen if role is not found
+      return const SplashScreen();
     }
   }
 

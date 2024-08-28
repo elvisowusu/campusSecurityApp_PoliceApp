@@ -1,8 +1,6 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:security_app/components/police%20officer/map_area.dart';
-import '../../widgets/signout.dart';
 import 'live_location_service.dart';
 
 class EmergencyNotifications extends StatefulWidget {
@@ -23,18 +21,6 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
       appBar: AppBar(
         title: const Text('Live Cases'),
         backgroundColor: Colors.black.withOpacity(0.2),
-        elevation: 0,
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-              ),
-            ),
-          ),
-        ),
-        actions: const [SignOutButton()],
       ),
       body: StreamBuilder<List<HelpRequest>>(
         stream: _liveLocationService.getActiveHelpRequests(),

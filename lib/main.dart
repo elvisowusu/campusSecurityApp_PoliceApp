@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:security_app/components/Counselor/notifications.dart';
 import 'package:security_app/components/police%20officer/emergency_notification.dart';
 import 'package:security_app/firebase_options.dart';
 import 'package:security_app/screens/splash_screen.dart';
@@ -11,7 +10,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'home_decider.dart';
 import 'package:timezone/data/latest.dart' as tz;
-
 import 'services/user_session.dart';
 
 final navigatorKey = GlobalKey<NavigatorState>();
@@ -106,8 +104,6 @@ class _MyAppState extends State<MyApp> {
           : const HomeDecider(),
       navigatorKey: navigatorKey,
       routes: {
-        "/": (context) => const HomeDecider(),
-        "/counselor": (context) => CounselorNotificationsPage(),
         "/emergency": (context) => EmergencyNotifications(
             policeOfficerId: policeOfficerId ?? 'unknown_officer'),
       },

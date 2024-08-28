@@ -6,6 +6,10 @@ class FirebaseAuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  static Future<bool> isLoggedIn() async {
+    User? user = FirebaseAuth.instance.currentUser;
+    return user != null;
+  }
   Future<User?> signUp(String email, String password) async {
     try {
       UserCredential userCredential =

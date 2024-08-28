@@ -8,6 +8,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../services/local_notification_services.dart';
 import '../services/user_session.dart';
 
 class SignUpScreen extends StatefulWidget {
@@ -419,12 +420,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
       });
 
       if (user != null) {
+        // Get the FCM token
+        String? fcmToken = await NotificationService.getDeviceToken();
+
         await FirebaseFirestore.instance
             .collection(widget.role)
             .doc(user.uid)
             .set({
           'fullName': fullName,
           'email': email,
+          'fcmToken': fcmToken,
           'createdAt': FieldValue.serverTimestamp(),
         });
         Fluttertoast.showToast(msg: "Sign up successful");
@@ -466,6 +471,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
       User? user = await FirebaseAuthService().signInWithGoogle();
 
       if (user != null) {
+        // Get the FCM token
+        String? fcmToken = await NotificationService.getDeviceToken();
         // Check if user already exists in the database
         DocumentSnapshot userDoc = await FirebaseFirestore.instance
             .collection(widget.role)
@@ -487,13 +494,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
               .set({
             'fullName': user.displayName,
             'email': user.email,
+             'fcmToken': fcmToken,
             'createdAt': FieldValue.serverTimestamp(),
           });
           // Save policeOfficerId to local session
-        if (widget.role == 'police_officers') {
-          // Save policeOfficerId to local session
-          await UserSession.savePoliceOfficerId(user.uid);
-        }
+          if (widget.role == 'police_officers') {
+            // Save policeOfficerId to local session
+            await UserSession.savePoliceOfficerId(user.uid);
+          }
           Fluttertoast.showToast(msg: "Sign up successful");
           setState(() {
             _isSigningUpWithGoogle = false;

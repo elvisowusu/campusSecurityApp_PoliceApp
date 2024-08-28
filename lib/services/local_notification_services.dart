@@ -1,15 +1,15 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:security_app/firebase_authentication/crud_service.dart';
-import 'package:security_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:security_app/main.dart';
-import 'package:security_app/services/state_notifier.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class NotificationService {
   // creating instance for firebaseMessaging to allow fcm
   static final _firebaseMessaging = FirebaseMessaging.instance;
+    // Fetch the FCM token
+  static Future<String?> getDeviceToken() async {
+    return await _firebaseMessaging.getToken();
+  }
   //creating an instance for the FlutterLocalNotification plugin
   static final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
@@ -25,32 +25,6 @@ class NotificationService {
       provisional: false,
       sound: true,
     );
-  }
-
-static Future getDeviceToken(WidgetRef ref) async {
-    final token = await _firebaseMessaging.getToken();
-    print("Device token: $token");
-    bool isUserLoggedIn = await FirebaseAuthService.isLoggedIn();
-
-    if (isUserLoggedIn && token != null) {
-      // Get the role from the provider passed as a parameter
-      final role = ref.read(userRoleProvider);
-      if (role != null) {
-        await CRUDService.saveUserToken(role, token);
-        print('saved token');
-      }
-    }
-
-// Handle token refresh
-_firebaseMessaging.onTokenRefresh.listen((event) async {
-  if (isUserLoggedIn && event != null) {
-    final role = ref.read(userRoleProvider);
-    if (role != null) {
-      await CRUDService.saveUserToken(role, event); // Use the new event token
-      print('saved refreshed token');
-    }
-  }
-    });
   }
 
 

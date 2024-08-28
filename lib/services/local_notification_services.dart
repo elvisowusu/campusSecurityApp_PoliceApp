@@ -1,11 +1,7 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:get/get.dart';
-import 'package:security_app/components/police%20officer/emergency_notification.dart';
+import 'package:security_app/main.dart';
 import 'package:timezone/timezone.dart' as tz;
-
-import 'user_session.dart';
 
 class NotificationService {
   // creating instance for firebaseMessaging to allow fcm
@@ -32,25 +28,6 @@ class NotificationService {
   }
 
   // Function to handle notification tap and navigate to MapArea
-static Future<void> onDidReceiveNotification(
-    NotificationResponse notificationResponse) async {
-  // Check if the notification was tapped
-  if (notificationResponse.notificationResponseType ==
-      NotificationResponseType.selectedNotification) {
-    // Retrieve policeOfficerId from session
-    String? policeOfficerId = await UserSession.getPoliceOfficerId();
-
-    // Check if policeOfficerId is null
-    if (policeOfficerId != null) {
-      // Navigate to Emergency notification screen
-      Get.to(() => EmergencyNotifications(policeOfficerId: policeOfficerId));
-    } else {
-      // Handle case where policeOfficerId is not available
-      Fluttertoast.showToast(msg: "Error: Police ID not found.");
-    }
-  }
-}
-
 
   //initializing the local notification plugin
   static Future<void> localNotInit() async {
@@ -72,8 +49,8 @@ static Future<void> onDidReceiveNotification(
     //initializing the plugin with the specified settings
     await flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
-      onDidReceiveNotificationResponse: onDidReceiveNotification,
-      onDidReceiveBackgroundNotificationResponse: onDidReceiveNotification,
+      onDidReceiveNotificationResponse: onTapNotification,
+      onDidReceiveBackgroundNotificationResponse: onTapNotification,
     );
 
     //initializing notification permission for android
@@ -107,5 +84,29 @@ static Future<void> onDidReceiveNotification(
         uiLocalNotificationDateInterpretation:
             UILocalNotificationDateInterpretation.absoluteTime,
         matchDateTimeComponents: DateTimeComponents.dateAndTime);
+  }
+
+  // on tap local notification in foreground
+  static void onTapNotification(NotificationResponse notificationResponse) {
+    navigatorKey.currentState!.pushNamed("/emergency", arguments: notificationResponse);
+  }
+
+  // show simple notification
+  static Future showSimpleNotification({
+    required String title,
+    required String body,
+    required String payload,
+  }) async {
+    const AndroidNotificationDetails androidNotificationDetails =
+        AndroidNotificationDetails('your channel id ', 'Emergency',
+            channelDescription: 'student in Danger',
+            importance: Importance.max,
+            priority: Priority.high,
+            ticker: 'ticker');
+
+    const NotificationDetails notificationDetails =
+        NotificationDetails(android: androidNotificationDetails);
+    await flutterLocalNotificationsPlugin.show(
+        0, title, body, notificationDetails);
   }
 }

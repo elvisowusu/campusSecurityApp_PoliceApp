@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:security_app/components/counselor/notifications.dart';
-import 'package:security_app/components/police%20officer/emergency_notification.dart';
 import 'package:security_app/firebase_authentication/firebase_auth_services.dart';
 import 'package:security_app/screens/forgot_password_screen.dart';
 import 'package:security_app/screens/personnel_type.dart';
@@ -10,6 +9,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../components/police officer/police_screen.dart';
 
 class SignInScreen extends StatefulWidget {
   const SignInScreen({super.key});
@@ -379,7 +379,7 @@ class _SignInScreenState extends State<SignInScreen> {
           Navigator.pushReplacement(
             context,
             MaterialPageRoute(
-              builder: (e) => EmergencyNotifications(policeOfficerId: user.uid),
+              builder: (e) => const PoliceScreen(),
             ),
           );
         } else if (isCounselor) {
@@ -449,7 +449,7 @@ void _signInWithGoogle() async {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-          builder: (e) => EmergencyNotifications(policeOfficerId: user.uid),
+          builder: (e) => const PoliceScreen(),
         ),
       );
     } else if (isCounselor) {

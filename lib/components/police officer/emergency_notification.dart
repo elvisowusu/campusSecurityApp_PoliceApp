@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:security_app/components/police%20officer/map_area.dart';
+import 'package:security_app/widgets/custom_appbar.dart';
 import 'live_location_service.dart';
 
 class EmergencyNotifications extends StatefulWidget {
@@ -18,10 +19,7 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Live Cases'),
-        backgroundColor: Colors.black.withOpacity(0.2),
-      ),
+      appBar: const MyAppBar(title: 'Live Cases'),
       body: StreamBuilder<List<HelpRequest>>(
         stream: _liveLocationService.getActiveHelpRequests(),
         builder: (context, snapshot) {

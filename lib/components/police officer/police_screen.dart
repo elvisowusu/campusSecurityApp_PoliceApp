@@ -1,9 +1,7 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:security_app/main.dart';
 
-import '../../widgets/signout.dart';
+import '../../widgets/custom_appbar.dart';
 
 class PoliceScreen extends StatefulWidget {
   const PoliceScreen({super.key});
@@ -16,22 +14,7 @@ class _PoliceScreenState extends State<PoliceScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Home Page'),
-        backgroundColor: Colors.black.withOpacity(0.2),
-        elevation: 0,
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-              ),
-            ),
-          ),
-        ),
-        actions: const [SignOutButton()],
-      ),
+      appBar: const MyAppBar(title: 'Campus Safety',),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,

@@ -1,10 +1,8 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:intl/intl.dart'; // Import for date formatting
-import '../../widgets/signout.dart';
+import 'package:intl/intl.dart'; 
+import '../../widgets/custom_appbar.dart';
 import 'chatpage.dart';
 
 class CounselorNotificationsPage extends StatelessWidget {
@@ -21,22 +19,7 @@ class CounselorNotificationsPage extends StatelessWidget {
     }
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Student Chats'),
-        backgroundColor: Colors.black.withOpacity(0.2),
-        elevation: 0,
-        flexibleSpace: ClipRect(
-          child: BackdropFilter(
-            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-            child: Container(
-              decoration: BoxDecoration(
-                color: Colors.black.withOpacity(0.2),
-              ),
-            ),
-          ),
-        ),
-        actions: const [SignOutButton()],
-      ),
+      appBar: const MyAppBar(title: 'Campus Safety',),
       body: StreamBuilder<QuerySnapshot>(
         stream: _firestore
             .collection('counselors')

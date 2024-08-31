@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:security_app/components/police%20officer/emergency_notification.dart';
 import 'package:security_app/firebase_options.dart';
 import 'package:security_app/screens/splash_screen.dart';
+import 'package:security_app/services/background_services.dart';
 import 'package:security_app/services/local_notification_services.dart';
 import 'package:security_app/theme/theme.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -29,6 +30,8 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+    // Initialize and start the background service
+  await initializeService();
 
   // Initializing Firebase Messaging
   await NotificationService.init();
@@ -70,7 +73,7 @@ Future<void> main() async {
   RemoteMessage? initialMessage =
       await FirebaseMessaging.instance.getInitialMessage();
   if (initialMessage != null) {
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(minutes: 5), () {
       navigatorKey.currentState?.pushNamed("/emergency");
     });
   }

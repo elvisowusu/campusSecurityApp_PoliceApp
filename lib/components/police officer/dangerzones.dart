@@ -108,26 +108,28 @@ class _DangerZoneMapPageState extends State<DangerZoneMapPage> {
     }
   }
 
-Future<void> _loadDangerZones() async {
-  try {
- List<DangerZone> dangerZones = await _liveLocationService.getDangerZones();
-    setState(() {
-      _dangerZoneCircles = dangerZones
-          .map((zone) => Circle(
-                circleId: CircleId(
-                    'danger_zone_${zone.latitude}_${zone.longitude}'),
-                center: LatLng(zone.latitude, zone.longitude),
-                radius: zone.radius,
-                fillColor: const Color.fromARGB(255, 234, 175, 171).withOpacity(0.3),
-                strokeColor: const Color.fromARGB(255, 240, 170, 165),
-                strokeWidth: 1,
-              ))
-          .toSet();
-    });
-  } catch (e) {
-     Fluttertoast.showToast(msg:'Error fetching danger zones: $e');
+  Future<void> _loadDangerZones() async {
+    try {
+      List<DangerZone> dangerZones =
+          await _liveLocationService.getDangerZones();
+      setState(() {
+        _dangerZoneCircles = dangerZones
+            .map((zone) => Circle(
+                  circleId: CircleId(
+                      'danger_zone_${zone.latitude}_${zone.longitude}'),
+                  center: LatLng(zone.latitude, zone.longitude),
+                  radius: zone.radius,
+                  fillColor:
+                      const Color.fromARGB(255, 251, 91, 80).withOpacity(0.3),
+                  strokeColor: const Color.fromARGB(255, 248, 89, 78),
+                  strokeWidth: 1,
+                ))
+            .toSet();
+      });
+    } catch (e) {
+      Fluttertoast.showToast(msg: 'Error fetching danger zones: $e');
+    }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -172,9 +174,8 @@ extension on LiveLocationService {
   Future<List<DangerZone>> getDangerZones() async {
     // Implement the logic to fetch danger zones from Firestore
     // For example:
-    final snapshot = await FirebaseFirestore.instance
-        .collection('danger_zones')
-        .get();
+    final snapshot =
+        await FirebaseFirestore.instance.collection('danger_zones').get();
     return snapshot.docs.map((doc) {
       return DangerZone(
         latitude: doc['latitude'],

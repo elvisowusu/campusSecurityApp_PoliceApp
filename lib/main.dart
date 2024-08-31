@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:security_app/components/police%20officer/emergency_notification.dart';
 import 'package:security_app/firebase_options.dart';
@@ -34,16 +35,23 @@ Future<void> main() async {
 
   // Initializing local notifications
   await NotificationService.localNotInit();
+  // Update FCM token
+  FirebaseMessaging.instance.onTokenRefresh.listen((fcmToken) {
+    updateFcmToken(fcmToken);
+  });
+
+  // Get the initial token
+  String? initialToken = await FirebaseMessaging.instance.getToken();
+  if (initialToken != null) {
+    updateFcmToken(initialToken);
+  }
 
   // Listen to background notifications
   FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundMessage);
 
-  // where to go after tapping a background message
+  // Handle notification when app is in background and user taps on it
   FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
-    if (message.notification != null) {
-      print('background message tapped');
-      navigatorKey.currentState!.pushNamed("/emergency", arguments: message);
-    }
+    navigatorKey.currentState?.pushNamed("/emergency");
   });
 
   // now handling foreground notifications
@@ -58,18 +66,27 @@ Future<void> main() async {
     }
   });
 
-  // now handling terminated state
-  final RemoteMessage? message =
+  // Handle notification when app is terminated and opened from notification
+  RemoteMessage? initialMessage =
       await FirebaseMessaging.instance.getInitialMessage();
-  if (message != null) {
-    print('launched from terminated state');
+  if (initialMessage != null) {
     Future.delayed(const Duration(seconds: 1), () {
-      navigatorKey.currentState!.pushNamed("/emergency", arguments: message);
+      navigatorKey.currentState?.pushNamed("/emergency");
     });
   }
 
   // Run the app
   runApp(const MyApp());
+}
+
+Future<void> updateFcmToken(String token) async {
+  String? userId = FirebaseAuth.instance.currentUser?.uid;
+  if (userId != null) {
+    await FirebaseFirestore.instance
+        .collection('police_officers')
+        .doc(userId)
+        .update({'fcmToken': token});
+  }
 }
 
 class MyApp extends StatefulWidget {

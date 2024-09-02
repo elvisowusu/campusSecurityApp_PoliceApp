@@ -53,26 +53,29 @@ class _EmergencyNotificationsState extends State<EmergencyNotifications> {
             itemCount: sortedHelpRequests.length,
             itemBuilder: (context, index) {
               final helpRequest = sortedHelpRequests[index];
-              return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                child: Slidable(
-                  endActionPane: ActionPane(
-                    motion: const ScrollMotion(),
-                    children: [
-                      SlidableAction(
-                        onPressed: (context) =>
-                            _confirmAndDelete(context, helpRequest),
-                        backgroundColor: Colors.red,
-                        foregroundColor: Colors.white,
-                        icon: Icons.delete,
-                        label: 'Delete',
-                      ),
-                    ],
-                  ),
-                  child: HelpRequestItem(
-                    helpRequest: helpRequest,
-                    onTap: () => _navigateToMapArea(context, helpRequest),
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 8),
+                  child: Slidable(
+                    key: ValueKey(helpRequest.trackingId),
+                    endActionPane: ActionPane(
+                      motion: const StretchMotion(),
+                      extentRatio: 0.25,  // Adjusted to give more space for centering
+                      children: [
+                        SlidableAction(
+                          onPressed: (context) =>
+                              _confirmAndDelete(context, helpRequest),
+                          backgroundColor: Colors.redAccent,
+                          foregroundColor: Colors.white,
+                          icon: Icons.delete_forever,
+                          borderRadius: BorderRadius.circular(16),// Centered the icon
+                        ),
+                      ],
+                    ),
+                    child: HelpRequestItem(
+                      helpRequest: helpRequest,
+                      onTap: () => _navigateToMapArea(context, helpRequest),
+                    ),
                   ),
                 ),
               );
@@ -149,50 +152,31 @@ class HelpRequestItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       color: helpRequest.isRead ? Colors.white : Colors.red[50],
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(12),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    'Emergency Case',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      color: helpRequest.isRead ? Colors.black87 : Colors.red,
-                    ),
-                  ),
-                  Icon(
-                    Icons.warning_amber_rounded,
-                    color: helpRequest.isRead ? Colors.orange : Colors.red,
-                    size: 28,
-                  ),
-                ],
-              ),
-              const SizedBox(height: 12),
               Text(
                 'Ref: ${helpRequest.referenceNumber}',
                 style: TextStyle(
                   fontSize: 16,
-                  color: Colors.grey[700],
+                  color: Colors.grey[800],
                   fontWeight: FontWeight.w500,
                 ),
               ),
-              const SizedBox(height: 12),
+              const SizedBox(height: 8),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Container(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     decoration: BoxDecoration(
                       color: helpRequest.isRead ? Colors.blue : Colors.red,
                       borderRadius: BorderRadius.circular(20),
@@ -204,9 +188,10 @@ class HelpRequestItem extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Tap to view details',
+                    'Tap to view',
                     style: TextStyle(
                       color: Colors.grey[600],
+                      fontSize: 14,
                       fontStyle: FontStyle.italic,
                     ),
                   ),
